@@ -1,0 +1,25 @@
+{
+    "id": "mobile.bunkerclock.org",
+    "start_url": "/",
+    "name": "Your App Name",
+    "short_name": "App",
+    "description": "Your app description",
+    "theme_color": "#ffffff",
+    "background_color": "#000000",
+    "display": "standalone",
+    "icons": [
+      {
+        "src": "icons/bunkerclock.png",
+        "sizes": "1024x1024",
+        "purpose": "maskable"
+      }
+    ],
+    "screenshots": [
+      {
+        "sizes": "1024x1024",
+        "form_factor": "narrow",
+        "src": "icons/bunkerclock.png"
+      }
+    ]
+  }
+  
