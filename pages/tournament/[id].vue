@@ -19,6 +19,7 @@
         </v-col>
     </v-row>
     <tournament-overview-tab v-if="activeTab == 0" />
+    <tournament-blinds-tab v-if="activeTab == 1" />
     <tournament-players-tab v-if="activeTab == 2" />
     </div>
 </template>

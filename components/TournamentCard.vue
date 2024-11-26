@@ -18,17 +18,17 @@
       <v-card-actions class="pt-1">
         <v-row no-gutters>
             <v-col class="d-flex align-center">
-                <v-btn @click="openTournament">
+                <v-btn @click.stop="openTournament">
                     Öffnen
                 </v-btn>
             </v-col>
             <v-col class="d-flex align-center">
-                <v-btn @click="registerTournament">
+                <v-btn @click.stop="registerTournament">
                     Anmelden
                 </v-btn>
             </v-col>
             <v-col>
-                <v-btn icon @click="deleteTournament">
+                <v-btn icon @click.stop="deleteTournament">
                     <v-icon>mdi-delete</v-icon>
                 </v-btn>
             </v-col>
@@ -41,7 +41,7 @@
   </template>
   
   <script lang="ts" setup>
-  const emit = defineEmits(['open'])
+  const emit = defineEmits(['open', 'delete'])
 
   const props = defineProps({
     title: String,
@@ -60,6 +60,7 @@
   };
   
   const deleteTournament = () => {
+    emit('delete')
     // Handle delete tournament logic
   };
   </script>

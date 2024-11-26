@@ -5,28 +5,30 @@
       <!-- Running Time -->
       <v-col class="time-box text-left d-flex align-center">
         <v-icon color="orange">mdi-av-timer</v-icon>
-        <div class="pt-1 ml-2">{{ formatTime(totalPlayTime) }}</div>
+        <div class="pt-1 ml-2">{{ formatTime(timerStore.totalPlayTime) }}</div>
       </v-col>
       <v-col></v-col>
       <!-- Next Break -->
       <v-col class="time-box justify-end d-flex align-center pr-3">
-        <div class="pt-1 mr-2">{{ formatTime(nextBreakTime) }}</div>
+        <div class="pt-1 mr-2">{{ formatTime(timerStore.nextBreakTime) }}</div>
         <v-icon color="orange">mdi-coffee-outline</v-icon>
       </v-col>
     </v-row>
 
     <!-- Main Timer -->
     <div class="main-timer">
-      <span>{{ formatTime(mainTimer) }}</span>
+      <span>{{ formatTime(timerStore.mainTimer) }}</span>
     </div>
 
     <!-- Slider -->
     <v-slider
       :min="0"
-      :max="roundDuration"
-      :model-value.number="roundDuration - mainTimer"
+      :max="timerStore.roundDuration"
+      :model-value.number="timerStore.roundDuration - timerStore.mainTimer"
       :step="1"
-      @update:model-value="(value) => {mainTimer = roundDuration - value}"
+      @update:model-value="(value) => {
+        timerStore.updateMainTimer(timerStore.roundDuration - value);
+      }"
       class="mt-4"
       color="orange"
       track-color="gray"
@@ -41,7 +43,7 @@
       </v-btn>
 
       <v-btn icon @click="toggleTimer">
-        <v-icon>{{ isRunning ? 'mdi-pause' : 'mdi-play' }}</v-icon>
+        <v-icon>{{ timerStore.isRunning ? 'mdi-pause' : 'mdi-play' }}</v-icon>
       </v-btn>
 
       <v-btn icon @click="nextLevel">
@@ -52,66 +54,57 @@
       </v-btn>
     </div>
   </v-col>
+  <blinds-up-spinner v-if="timerStore.isRoundUp" :blindsText="currentLevel.isBreak ? 'Pause' : currentLevel.smallBlind + ' / ' + currentLevel.bigBlind" />
 </template>
 
 <script lang="ts" setup>
-import { ref, onUnmounted } from "vue";
+  
 import alarmSoundFile from '@/assets/sounds/round-end.wav';
-
-const roundDuration = ref(1800); // Total round time (30 minutes)
-const mainTimer = ref(1800); // Main timer countdown
-const isRunning = ref(false); // Timer state
-const totalPlayTime = ref(0); // Total play time
-const nextBreakTime = ref(3600); // Time until next break (e.g., 1 hour)
-let intervalId: number | null = null; // Holds the timer interval ID
-
 let alarmSound: HTMLAudioElement | null = null;
 if (typeof window !== "undefined") {
-  alarmSound = new Audio(alarmSoundFile); // Ensure this path is correct
+  alarmSound = new Audio(alarmSoundFile);
 }
-// Toggle timer play/pause state
-const toggleTimer = () => {
-  isRunning.value = !isRunning.value;
-
-  if (isRunning.value) {
-    intervalId = window.setInterval(() => {
-      if (mainTimer.value > 0) {
-        mainTimer.value--;
-        totalPlayTime.value++;
-      } else {
-        // Time is up, play the sound and stop the timer
-        alarmSound?.play(); // Play the alarm sound
-        setTimeout(() => {
-          if(alarmSound) {
-            alarmSound.pause();
-            alarmSound.currentTime = 0;
-          }
-        }, 2000);
-        toggleTimer(); // Pause the timer
-      }
-    }, 1000);
-  } else {
-    if (intervalId !== null) {
-      clearInterval(intervalId);
-      intervalId = null;
-    }
+//  BlindsUpSpinenr
+const timerStore = useTimerStore();
+const props = defineProps({
+  currentLevel: {
+    type: Object,
+    required: true,
   }
-};
+})
+const emit = defineEmits(['nextLevel', 'previousLevel'])
 
-// Button functions
+const isRoundUp = computed(() => timerStore.isRoundUp)
+// Button actions
 const prevLevel = () => {
-  console.log("Previous Level");
+  // timerStore.prevLevel();
+  emit('previousLevel');
 };
 
 const nextLevel = () => {
-  console.log("Next Level");
+  // timerStore.nextLevel();
+  emit('nextLevel');
+};
+
+const toggleTimer = () => {
+  timerStore.toggleTimer();
 };
 
 const toggleFullScreen = () => {
   console.log("Toggle Full Screen");
 };
 
-// Format time in MM:SS
+const playAlarm = () => {
+  if (alarmSound) {
+    alarmSound.play();
+    setTimeout(() => {
+      alarmSound.pause();
+      alarmSound.currentTime = 0;
+    }, 2000);
+  }
+};
+
+// Utility for time formatting
 const formatTime = (seconds: number) => {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
@@ -120,12 +113,13 @@ const formatTime = (seconds: number) => {
     .padStart(2, "0")}`;
 };
 
-// Clean up interval on component unmount
-onUnmounted(() => {
-  if (intervalId !== null) {
-    clearInterval(intervalId);
+watch(isRoundUp, (newVal, oldVal) => {
+  console.log('isRoundUp')
+  console.log(isRoundUp)
+  if(isRoundUp.value == true) {
+    playAlarm();
   }
-});
+})
 </script>
 
 <style scoped>

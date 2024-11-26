@@ -2,7 +2,7 @@
     <!-- Club Lobby Section -->
     <v-container>
     <v-row>
-        <v-col cols="12" md="4">
+        <v-col cols="12">
         <v-card>
             <v-row no-gutters>
                 <v-col cols="3">
@@ -50,12 +50,14 @@
     <v-row>
         <v-col cols="6" xs="12">
             <tournament-card
+                class="mt-3"
                 v-for="tournament in tournamentsStore.tournaments"
                 :key="tournament.id"
                 :title="tournament.name"
                 :date="tournament.date + ' ' + tournament.startTime"
                 :expected-players="tournament.settings.expectedPlayers"
                 @open="() => navigateToTournament(tournament.id)"
+                @delete="() => deleteTournament(tournament.id)"
             />
         </v-col>
     </v-row>
@@ -78,6 +80,12 @@
     console.log('Create new tournament');
     console.log(newTournmentDialog.value);
     newTournmentDialog.value?.show()
+  };
+
+  const deleteTournament = (id: string) => {
+    console.log('Delete tournament' + id);
+    console.log(newTournmentDialog.value);
+    tournamentsStore.removeTournament(id)
   };
   
   const joinClub = () => {

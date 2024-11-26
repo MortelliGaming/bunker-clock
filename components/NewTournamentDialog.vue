@@ -153,6 +153,7 @@
     chipset: [],
     players: [],
     settings: {
+      levels: [],
       expectedPlayers: 0,
       playerParameters: {
         maxPlayers: 0,
@@ -224,6 +225,7 @@
       chipset: [],
       players: [],
       settings: {
+        levels: [],
         expectedPlayers: 0,
         managePlayers: false,
         playerParameters: {

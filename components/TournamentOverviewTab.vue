@@ -17,30 +17,44 @@
             </div>
         </v-col>
         <v-col class="tournament-box" cols="7">
-            <poker-timer />
+            <poker-timer
+                v-if="currentLevel"
+                :current-level="currentLevel"
+                @next-level="forward"
+                @previous-level="previous"
+            />
         </v-col>
         <v-col cols="2" class="tournament-box">
             <v-row class="fill-height" no-gutters>
                 <v-col cols="12" class="d-flex flex-column justify-center align-center pa-0" style="border-bottom: 1px solid;">
                     <h3 class="text-orange">Current Blinds</h3> 
-                    <div class="blind-number">{{ 5 }} / {{  10 }}</div>
+                    <div class="blind-number" v-if="currentLevel ? !currentLevel.isBreak : false">
+                        {{ currentLevel?.smallBlind }} / {{ currentLevel?.bigBlind}}
+                    </div>
+                    <div class="blind-number" v-else>
+                        {{ 'Pause' }}
+                    </div>
                 </v-col>
                 <v-col cols="12" class="d-flex flex-column justify-center align-center">
                     <h3 class="text-orange">Next Blinds</h3>
-                    <div class="blind-number">10 / 25</div>
+                    <div class="blind-number" v-if="nextLevel ? !nextLevel.isBreak : false">
+                        {{ nextLevel ? nextLevel.smallBlind : '' }} / {{ nextLevel ? nextLevel.bigBlind : '' }}
+                    </div>
+                    <div class="blind-number" v-else>
+                        {{ 'Pause' }}
+                    </div>
                 </v-col>
             </v-row>
-        </v-col>
-    </v-row>
-    <v-row no-gutters>
-        <v-col class="tournament-box">
-            {{ tournament }}
         </v-col>
     </v-row>
 </template>
 <script lang ="ts" setup>
 const router = ref(useRouter())
 const tournamentsStore = useTournamentsStore()
+const timerStore = useTimerStore()
+
+const isRoundUp = computed(() => timerStore.isRoundUp)
+
 const tournament = computed(() => {
     return tournamentsStore.tournaments.find(t => t.id == router.value.currentRoute.params.id)
 })
@@ -55,7 +69,7 @@ const playersAddons = computed(() => {
     return tournament.value?.players?.reduce((sum, item) => sum + item.addons, 0);
 })
 const remainingPlayers = computed(() => {
-    return (tournament.value?.players?.length ?? 0) - (playersOut.value || 0)  + (playersRebuys.value ?? 0);
+    return (tournament.value?.players?.length ?? 0) - (playersOut.value || 0);
 })
 
 const totalChipsStartStacks = computed(() => {
@@ -70,9 +84,41 @@ const totalChipsAddons = computed(() => {
 const totalChipsInGame = computed(() => {
     return totalChipsStartStacks.value + totalChipsAddons.value + totalChipsRebuys.value;
 })
-
 const averageStack = computed(() => {
-    return totalChipsInGame.value / (remainingPlayers.value > 0 ? remainingPlayers.value : 1);
+    return (totalChipsInGame.value / (remainingPlayers.value > 0 ? remainingPlayers.value : 1)).toFixed(0);
+})
+
+const currentLevelIndex = ref(0)
+const levels = computed(() => tournament.value?.settings.levels)
+const currentLevel = computed(() => levels.value && levels.value[currentLevelIndex.value]);
+const nextLevel = computed(() => (levels.value && levels.value.length > currentLevelIndex.value) && levels.value[currentLevelIndex.value + 1]);
+
+function forward() {
+    if(levels.value && levels.value.length > currentLevelIndex.value) {
+        currentLevelIndex.value++;
+    }
+    timerStore.resetTimer((currentLevel.value?.time ?? 30) * 60);
+    timerStore.toggleTimer();
+}
+
+function previous() {
+    if(levels.value && currentLevelIndex.value > 0) {
+        currentLevelIndex.value--;
+    }
+    timerStore.resetTimer((currentLevel.value?.time ?? 30) * 60);
+    timerStore.toggleTimer();
+}
+
+watch(isRoundUp, (newVal, oldVal) => {
+  console.log('isRoundUp')
+  console.log(isRoundUp)
+  if(isRoundUp.value == true) {
+    if(levels.value && levels.value.length > currentLevelIndex.value) {
+        currentLevelIndex.value++;
+        timerStore.resetTimer((currentLevel.value?.time ?? 30) * 60);
+        timerStore.toggleTimer();
+    }
+  }
 })
 </script>
 

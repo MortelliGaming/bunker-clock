@@ -12,6 +12,13 @@ export interface Tournament {
   players: Player[];
 }
 
+export interface TournamentLevel {
+  time: number;
+  smallBlind: number;
+  bigBlind: number;
+  isBreak: boolean;
+}
+
 export interface Player {
   name: string;
   seat: string;
@@ -39,6 +46,7 @@ export interface TournamentSettings {
   antes: boolean;
   rebuyChips: number;
   addonChips: number;
+  levels: TournamentLevel[]
 }
 
 export const useTournamentsStore = defineStore('tournament', () => {
@@ -54,6 +62,7 @@ export const useTournamentsStore = defineStore('tournament', () => {
 
   const removeTournament = (id: string) => {
     tournaments.value = tournaments.value.filter(t => t.id !== id);
+    saveTournamentsToLocalStorage();
   };
 
   const updateTournament = (id: string, updatedData: Partial<Tournament>) => {
@@ -61,6 +70,7 @@ export const useTournamentsStore = defineStore('tournament', () => {
     if (index !== -1) {
       tournaments.value[index] = { ...tournaments.value[index], ...updatedData };
     }
+    saveTournamentsToLocalStorage();
   };
 
   // Getters

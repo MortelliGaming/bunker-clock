@@ -11,6 +11,7 @@
 import { ref } from 'vue'
 
 const tournamentsStore = useTournamentsStore()
+const timerStore = useTimerStore()
 
 const drawer = ref(null)
 onMounted(() => {
@@ -30,4 +31,10 @@ onMounted(() => {
     }
   }, 200);
 })
+
+
+// Lifecycle cleanup
+onUnmounted(() => {
+  timerStore.stopTimer();
+});
 </script>
