@@ -37,7 +37,6 @@ export default defineNuxtConfig({
           handler: 'CacheFirst',
           options: {
             cacheName: 'html-cache',
-            networkTimeoutSeconds: 10,
             expiration: {
               maxEntries: 5,
               maxAgeSeconds: 60 * 60 * 24,
@@ -46,7 +45,7 @@ export default defineNuxtConfig({
         },
         {
           urlPattern: /.*\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
-          handler: 'NetworkFirst',
+          handler: 'CacheFirst',
           options: {
             cacheName: 'image-cache',
             expiration: {
