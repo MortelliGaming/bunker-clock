@@ -28,6 +28,7 @@ export default defineNuxtConfig({
         '/offline.html', // Optional offline page fallback
         '/', // Explicitly add the root URL to the cache
       ],
+      globIgnores: ['/_redirects/'],
       inlineWorkboxRuntime: false,
       disableDevLogs: false,
       runtimeCaching: [
@@ -78,7 +79,7 @@ export default defineNuxtConfig({
     },
     manifest: {
       id: 'mobile.bunkerclock.org',
-      start_url: '/',
+      start_url: './',
       name: 'BunkerClock',
       short_name: 'Clock',
       description: 'The ultimate poker clock for your games.',
@@ -121,7 +122,7 @@ export default defineNuxtConfig({
 
   // Static Assets Optimization
   app: {
-    baseURL: '/', // Set base URL for your app
+    baseURL: './', // Set base URL for your app
   },
 
   // Build Configuration
