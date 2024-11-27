@@ -23,9 +23,9 @@ export default defineNuxtConfig({
     registerType: 'autoUpdate',
     workbox: {
       globPatterns: [
-        '**/*.{js,css,html,png,svg,ico,json,webmanifest}', // Make sure HTML is included
-        '/index.html',  // Ensure the root HTML file is precached
-        '/offline.html', // Optionally, provide a fallback offline page
+        '**/*.{js,css,html,png,svg,ico,json,webmanifest}', // Including all necessary files
+        '/index.html', // Ensure the root HTML file is explicitly precached
+        '/offline.html', // Optional offline page fallback
       ],
       inlineWorkboxRuntime: false,
       disableDevLogs: false,
@@ -43,24 +43,13 @@ export default defineNuxtConfig({
           },
         },
         {
-          urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
+          urlPattern: /.*\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
           handler: 'NetworkFirst',
           options: {
             cacheName: 'image-cache',
             expiration: {
               maxEntries: 100,
-              maxAgeSeconds: 60 * 60 * 24 * 30,
-            },
-          },
-        },
-        {
-          urlPattern: /\.(?:mp3|otf)$/,
-          handler: 'NetworkFirst',
-          options: {
-            cacheName: 'media-cache',
-            expiration: {
-              maxEntries: 50,
-              maxAgeSeconds: 60 * 60 * 24 * 30,
+              maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
             },
           },
         },
@@ -72,13 +61,13 @@ export default defineNuxtConfig({
             networkTimeoutSeconds: 10,
             expiration: {
               maxEntries: 50,
-              maxAgeSeconds: 60 * 60 * 24 * 7,
+              maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
             },
             cacheableResponse: { statuses: [0, 200] },
           },
         },
         {
-          urlPattern: /.*\..*/,
+          urlPattern: /.*\..*/, // Cache all other resources
           handler: 'NetworkFirst',
           options: {
             cacheName: 'general-cache',
@@ -120,7 +109,6 @@ export default defineNuxtConfig({
       type: 'module',
     },
   },
-  
   // Additional Nuxt Configurations
   vite: {
     server: {
