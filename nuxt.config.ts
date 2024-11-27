@@ -30,7 +30,7 @@ export default defineNuxtConfig({
       runtimeCaching: [
         {
           urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/, // Cache images
-          handler: 'CacheFirst', // Prefer cached images
+          handler: 'NetworkFirst', // Prefer cached images
           options: {
             cacheName: 'image-cache',
             expiration: {
@@ -81,7 +81,7 @@ export default defineNuxtConfig({
       ],
     },
     client: {
-      installPrompt: true,
+      installPrompt: false,
     },
     devOptions: {
       enabled: true,
