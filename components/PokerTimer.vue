@@ -59,7 +59,7 @@
 
 <script lang="ts" setup>
   
-import alarmSoundFile from '@/assets/sounds/round-end.wav';
+import alarmSoundFile from '@/assets/sounds/round-end.mp3';
 let alarmSound: HTMLAudioElement | null = null;
 if (typeof window !== "undefined") {
   alarmSound = new Audio(alarmSoundFile);
