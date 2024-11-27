@@ -23,54 +23,10 @@ export default defineNuxtConfig({
     registerType: 'autoUpdate',
     workbox: {
       globPatterns: [
-        '**/*.{js,css,html,png,svg,ico,json,webmanifest,mp3,otf}', // Cache specified file types
+        '**/*.*', // Cache specified file types
       ],
       inlineWorkboxRuntime: false,
       disableDevLogs: false,
-      runtimeCaching: [
-        {
-          urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/, // Cache images
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'image-cache',
-            expiration: {
-              maxEntries: 100,
-              maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
-            },
-          },
-        },
-        {
-          urlPattern: /\.(?:mp3|otf)$/, // Cache MP3 and OTF files
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'media-cache',
-            expiration: {
-              maxEntries: 50,
-              maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
-            },
-          },
-        },
-        {
-          urlPattern: /^https?.*/, // Cache API and external requests
-          handler: 'NetworkFirst',
-          options: {
-            cacheName: 'api-cache',
-            networkTimeoutSeconds: 10, // Fallback to cache if network is slow
-            expiration: {
-              maxEntries: 50,
-              maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
-            },
-            cacheableResponse: { statuses: [0, 200] },
-          },
-        },
-        {
-          urlPattern: /.*\..*/, // Cache everything else
-          handler: 'StaleWhileRevalidate',
-          options: {
-            cacheName: 'general-cache',
-          },
-        },
-      ],
     },
     manifest: {
       id: 'mobile.bunkerclock.org',
