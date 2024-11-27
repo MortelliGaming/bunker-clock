@@ -34,7 +34,7 @@ export default defineNuxtConfig({
       runtimeCaching: [
         {
           urlPattern: /.*\.html$/,
-          handler: 'NetworkFirst',
+          handler: 'CacheFirst',
           options: {
             cacheName: 'html-cache',
             networkTimeoutSeconds: 10,
@@ -56,21 +56,8 @@ export default defineNuxtConfig({
           },
         },
         {
-          urlPattern: /^https?.*/,
-          handler: 'NetworkFirst',
-          options: {
-            cacheName: 'api-cache',
-            networkTimeoutSeconds: 10,
-            expiration: {
-              maxEntries: 50,
-              maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
-            },
-            cacheableResponse: { statuses: [0, 200] },
-          },
-        },
-        {
           urlPattern: /.*\..*/, // Cache all other resources
-          handler: 'NetworkFirst',
+          handler: 'CacheFirst',
           options: {
             cacheName: 'general-cache',
           },
@@ -79,7 +66,7 @@ export default defineNuxtConfig({
     },
     manifest: {
       id: 'mobile.bunkerclock.org',
-      start_url: 'https://warm-torte-138e45.netlify.app',
+      start_url: '/',
       name: 'BunkerClock',
       short_name: 'Clock',
       description: 'The ultimate poker clock for your games.',
@@ -104,10 +91,10 @@ export default defineNuxtConfig({
       ],
     },
     client: {
-      installPrompt: true,
+      installPrompt: false,
     },
     devOptions: {
-      enabled: true,
+      enabled: false,
       type: 'module',
     },
   },
@@ -122,7 +109,7 @@ export default defineNuxtConfig({
 
   // Static Assets Optimization
   app: {
-    baseURL: 'https://warm-torte-138e45.netlify.app', // Set base URL for your app
+    baseURL: '/', // Set base URL for your app
   },
 
   // Build Configuration
