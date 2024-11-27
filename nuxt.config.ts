@@ -25,12 +25,21 @@ export default defineNuxtConfig({
       globPatterns: [
         '**/*.{js,css,html,png,svg,ico,json,webmanifest,mp3,ttf,otf}', // Including all necessary files
         '/index.html', // Ensure the root HTML file is explicitly precached
-        '/offline.html', // Optional offline page fallback
         '/', // Explicitly add the root URL to the cache
       ],
       inlineWorkboxRuntime: false,
       disableDevLogs: false,
-      runtimeCaching: [
+      runtimeCaching: [{
+        urlPattern: '/',
+          handler: 'NetworkFirst', // Fallback for the root URL
+          options: {
+            cacheName: 'root-cache',
+            expiration: {
+              maxEntries: 1,
+              maxAgeSeconds: 60 * 60 * 24, // 1 day
+            },
+          },
+        },
         {
           urlPattern: /.*\.html$/,
           handler: 'CacheFirst',
