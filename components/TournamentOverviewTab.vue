@@ -49,7 +49,8 @@
     </v-row>
 </template>
 <script lang ="ts" setup>
-
+import fiveMinuteBlindUp from '@/assets/sounds/blinds_up_5_min.mp3';
+import fiveMinuteBreak from '@/assets/sounds/break_in_5_min.mp3';
 
 let fiveMinuteBreakAudio: HTMLAudioElement | null = null;
 if (typeof window !== "undefined") {
