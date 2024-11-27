@@ -49,11 +49,23 @@
     </v-row>
 </template>
 <script lang ="ts" setup>
+
+
+let fiveMinuteBreakAudio: HTMLAudioElement | null = null;
+if (typeof window !== "undefined") {
+  fiveMinuteBreakAudio = new Audio(fiveMinuteBreak);
+}
+let fiveMinuteBlindsUpAudio: HTMLAudioElement | null = null;
+if (typeof window !== "undefined") {
+  fiveMinuteBlindsUpAudio = new Audio(fiveMinuteBlindUp);
+}
+
 const router = ref(useRouter())
 const tournamentsStore = useTournamentsStore()
 const timerStore = useTimerStore()
 
 const isRoundUp = computed(() => timerStore.isRoundUp)
+const mainTimer = computed(() => timerStore.mainTimer)
 
 const tournament = computed(() => {
     return tournamentsStore.tournaments.find(t => t.id == router.value.currentRoute.params.id)
@@ -117,6 +129,19 @@ watch(isRoundUp, (newVal, oldVal) => {
         currentLevelIndex.value++;
         timerStore.resetTimer((currentLevel.value?.time ?? 30) * 60);
         timerStore.toggleTimer();
+    }
+  }
+})
+
+
+watch(mainTimer, () => {
+  if(mainTimer.value == 5 * 60) {
+    // 5 minutes warning
+    if(nextLevel.value && nextLevel.value.isBreak) {
+      // probably not a break anymore
+      fiveMinuteBreakAudio?.play();
+    } else {
+      fiveMinuteBlindsUpAudio?.play();
     }
   }
 })
