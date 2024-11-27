@@ -23,33 +23,65 @@ export default defineNuxtConfig({
     registerType: 'autoUpdate',
     workbox: {
       globPatterns: [
-        '**/*.{js,css,html,png,svg,ico,json,webmanifest}' // Cache essential assets
+        '**/*.{js,css,html,png,svg,ico,json,webmanifest}', // Make sure HTML is included
+        '/index.html',  // Ensure the root HTML file is precached
+        '/offline.html', // Optionally, provide a fallback offline page
       ],
       inlineWorkboxRuntime: false,
       disableDevLogs: false,
       runtimeCaching: [
         {
-          urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/, // Cache images
-          handler: 'NetworkFirst', // Prefer cached images
+          urlPattern: /.*\.html$/,
+          handler: 'NetworkFirst',
           options: {
-            cacheName: 'image-cache',
+            cacheName: 'html-cache',
+            networkTimeoutSeconds: 10,
             expiration: {
-              maxEntries: 100, // Max 100 images cached
-              maxAgeSeconds: 60 * 60 * 24 * 30, // Cache for 30 days
+              maxEntries: 5,
+              maxAgeSeconds: 60 * 60 * 24,
             },
           },
         },
         {
-          urlPattern: /^https?.*/, // Cache API calls and other external requests
-          handler: 'NetworkFirst', // Try network first, fallback to cache
+          urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'image-cache',
+            expiration: {
+              maxEntries: 100,
+              maxAgeSeconds: 60 * 60 * 24 * 30,
+            },
+          },
+        },
+        {
+          urlPattern: /\.(?:mp3|otf)$/,
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'media-cache',
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 60 * 60 * 24 * 30,
+            },
+          },
+        },
+        {
+          urlPattern: /^https?.*/,
+          handler: 'NetworkFirst',
           options: {
             cacheName: 'api-cache',
-            networkTimeoutSeconds: 10, // Timeout after 10 seconds
+            networkTimeoutSeconds: 10,
             expiration: {
-              maxEntries: 50, // Cache max 50 API responses
-              maxAgeSeconds: 60 * 60 * 24 * 7, // Cache for 7 days
+              maxEntries: 50,
+              maxAgeSeconds: 60 * 60 * 24 * 7,
             },
             cacheableResponse: { statuses: [0, 200] },
+          },
+        },
+        {
+          urlPattern: /.*\..*/,
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'general-cache',
           },
         },
       ],
@@ -81,7 +113,7 @@ export default defineNuxtConfig({
       ],
     },
     client: {
-      installPrompt: false,
+      installPrompt: true,
     },
     devOptions: {
       enabled: true,
