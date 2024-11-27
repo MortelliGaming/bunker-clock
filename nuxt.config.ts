@@ -23,10 +23,36 @@ export default defineNuxtConfig({
     registerType: 'autoUpdate',
     workbox: {
       globPatterns: [
-        '**/*.*', // Cache specified file types
+        '**/*.{js,css,html,png,svg,ico,json,webmanifest}' // Cache essential assets
       ],
       inlineWorkboxRuntime: false,
       disableDevLogs: false,
+      runtimeCaching: [
+        {
+          urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/, // Cache images
+          handler: 'CacheFirst', // Prefer cached images
+          options: {
+            cacheName: 'image-cache',
+            expiration: {
+              maxEntries: 100, // Max 100 images cached
+              maxAgeSeconds: 60 * 60 * 24 * 30, // Cache for 30 days
+            },
+          },
+        },
+        {
+          urlPattern: /^https?.*/, // Cache API calls and other external requests
+          handler: 'NetworkFirst', // Try network first, fallback to cache
+          options: {
+            cacheName: 'api-cache',
+            networkTimeoutSeconds: 10, // Timeout after 10 seconds
+            expiration: {
+              maxEntries: 50, // Cache max 50 API responses
+              maxAgeSeconds: 60 * 60 * 24 * 7, // Cache for 7 days
+            },
+            cacheableResponse: { statuses: [0, 200] },
+          },
+        },
+      ],
     },
     manifest: {
       id: 'mobile.bunkerclock.org',
@@ -59,7 +85,7 @@ export default defineNuxtConfig({
     },
     devOptions: {
       enabled: true,
-      type: 'module', // Ensures proper service worker loading in development
+      type: 'module',
     },
   },
   
