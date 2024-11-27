@@ -20,20 +20,10 @@ export default defineNuxtConfig({
   pwa: {
     registerType: 'autoUpdate',
     workbox: {
-      globPatterns: ["**/*.{js,html,css,png,ico,woff2,svg,json}"],
+      globPatterns: ["**/*.*"],
       inlineWorkboxRuntime: false,
       disableDevLogs: false,
-      runtimeCaching: [
-        {
-          urlPattern: /^\/$/, // Matches the root URL
-          handler: 'CacheFirst', // Serve from cache first
-          options: {
-            cacheName: 'root-cache',
-            expiration: {
-              maxEntries: 1, // You can change the expiration to suit your needs
-            },
-          },
-        },{
+      runtimeCaching: [{
           urlPattern: /.*\..*/,
           handler: 'CacheFirst',
           options: {
