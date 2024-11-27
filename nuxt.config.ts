@@ -5,9 +5,11 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
   modules: ['@vite-pwa/nuxt', 'vuetify-nuxt-module', '@pinia/nuxt'],
+  
+  // Vuetify Configuration
   vuetify: {
     moduleOptions: {
-      /* module specific options */
+      /* Vuetify-specific options */
     },
     vuetifyOptions: {
       theme: {
@@ -15,11 +17,13 @@ export default defineNuxtConfig({
       },
     },
   },
+
+  // PWA Configuration
   pwa: {
     registerType: 'autoUpdate',
     workbox: {
       globPatterns: [
-        '**/*.{js,css,html,png,svg,ico,json,webmanifest,mp3,otf}', // Includes MP3 and OTF files
+        '**/*.{js,css,html,png,svg,ico,json,webmanifest,mp3,otf}', // Cache specified file types
       ],
       inlineWorkboxRuntime: false,
       disableDevLogs: false,
@@ -79,7 +83,7 @@ export default defineNuxtConfig({
       display: 'standalone',
       icons: [
         {
-          src: 'icons/bunkerclock.png',
+          src: '/icons/bunkerclock.png',
           sizes: '1024x1024',
           type: 'image/png',
           purpose: 'any maskable',
@@ -87,7 +91,7 @@ export default defineNuxtConfig({
       ],
       screenshots: [
         {
-          src: 'icons/bunkerclock.png',
+          src: '/icons/bunkerclock.png',
           sizes: '1024x1024',
           type: 'image/png',
           form_factor: 'narrow',
@@ -99,6 +103,26 @@ export default defineNuxtConfig({
     },
     devOptions: {
       enabled: true,
+      type: 'module', // Ensures proper service worker loading in development
     },
+  },
+  
+  // Additional Nuxt Configurations
+  vite: {
+    server: {
+      fs: {
+        strict: false, // To handle file system-related issues
+      },
+    },
+  },
+
+  // Static Assets Optimization
+  app: {
+    baseURL: '/', // Set base URL for your app
+  },
+
+  // Build Configuration
+  build: {
+    analyze: false, // Set to true for debugging bundle size
   },
 });
