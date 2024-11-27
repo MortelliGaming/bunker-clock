@@ -3,9 +3,8 @@ export default defineNuxtConfig({
     '@/assets/css/main.scss',
   ],
   compatibilityDate: '2024-11-01',
-  devtools: { enabled: true },
+  // devtools: { enabled: true },
   modules: ['@vite-pwa/nuxt', 'vuetify-nuxt-module', '@pinia/nuxt'],
-  
   // Vuetify Configuration
   vuetify: {
     moduleOptions: {
