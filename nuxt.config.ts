@@ -1,7 +1,6 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   css: [
-    '@/assets/css/main.scss', // Adjust the path as necessary
+    '@/assets/css/main.scss',
   ],
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
@@ -13,25 +12,58 @@ export default defineNuxtConfig({
     vuetifyOptions: {
       theme: {
         defaultTheme: 'dark',
-      }
-      /* vuetify options */
-    }
+      },
+    },
   },
   pwa: {
     registerType: 'autoUpdate',
     workbox: {
-      globPatterns: ["**/*.*"],
+      globPatterns: [
+        '**/*.{js,css,html,png,svg,ico,json,webmanifest,mp3,otf}', // Includes MP3 and OTF files
+      ],
       inlineWorkboxRuntime: false,
       disableDevLogs: false,
-      runtimeCaching: [{
-          urlPattern: /.*\..*/,
+      runtimeCaching: [
+        {
+          urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/, // Cache images
           handler: 'CacheFirst',
           options: {
-            cacheName: 'assets-cache',
+            cacheName: 'image-cache',
             expiration: {
               maxEntries: 100,
-              maxAgeSeconds: 60 * 60 * 24 * 7,
+              maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
             },
+          },
+        },
+        {
+          urlPattern: /\.(?:mp3|otf)$/, // Cache MP3 and OTF files
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'media-cache',
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+            },
+          },
+        },
+        {
+          urlPattern: /^https?.*/, // Cache API and external requests
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'api-cache',
+            networkTimeoutSeconds: 10, // Fallback to cache if network is slow
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+            },
+            cacheableResponse: { statuses: [0, 200] },
+          },
+        },
+        {
+          urlPattern: /.*\..*/, // Cache everything else
+          handler: 'StaleWhileRevalidate',
+          options: {
+            cacheName: 'general-cache',
           },
         },
       ],
@@ -39,22 +71,34 @@ export default defineNuxtConfig({
     manifest: {
       id: 'mobile.bunkerclock.org',
       start_url: '/',
-      name: 'Your App Name',
-      short_name: 'App',
-      description: 'Your app description',
+      name: 'BunkerClock',
+      short_name: 'Clock',
+      description: 'The ultimate poker clock for your games.',
       theme_color: '#ffffff',
       background_color: '#000000',
       display: 'standalone',
-      icons: [{
-        src: 'icons/bunkerclock.png', // Name of the generated icon file
-        sizes: '1024x1024', // Sizes to generate
-        purpose: ['maskable'] // Maskable icons for better display on Android
-      }],
-      screenshots: [{
-        sizes: '1024x1024', // Sizes to generate
-        form_factor: 'narrow',
-        src: 'icons/bunkerclock.png', // Name of the generated icon file
-      }]
+      icons: [
+        {
+          src: 'icons/bunkerclock.png',
+          sizes: '1024x1024',
+          type: 'image/png',
+          purpose: 'any maskable',
+        },
+      ],
+      screenshots: [
+        {
+          src: 'icons/bunkerclock.png',
+          sizes: '1024x1024',
+          type: 'image/png',
+          form_factor: 'narrow',
+        },
+      ],
+    },
+    client: {
+      installPrompt: true,
+    },
+    devOptions: {
+      enabled: true,
     },
   },
-})
+});
