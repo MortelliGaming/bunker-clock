@@ -37,7 +37,7 @@
   </script>
   
   <style scoped>
-  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap'); /* Clean modern font */
+   /* @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap');Clean modern font */
   
   /* Overlay styles */
   .overlay {
