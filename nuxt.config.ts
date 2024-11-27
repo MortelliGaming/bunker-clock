@@ -23,7 +23,7 @@ export default defineNuxtConfig({
     registerType: 'autoUpdate',
     workbox: {
       globPatterns: [
-        '**/*.{js,css,html,png,svg,ico,json,webmanifest}', // Including all necessary files
+        '**/*.{js,css,html,png,svg,ico,json,webmanifest,mp3}', // Including all necessary files
         '/index.html', // Ensure the root HTML file is explicitly precached
         '/offline.html', // Optional offline page fallback
         '/', // Explicitly add the root URL to the cache
