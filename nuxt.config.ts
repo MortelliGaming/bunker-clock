@@ -28,7 +28,6 @@ export default defineNuxtConfig({
         '/offline.html', // Optional offline page fallback
         '/', // Explicitly add the root URL to the cache
       ],
-      globIgnores: ['/_redirects/'],
       inlineWorkboxRuntime: false,
       disableDevLogs: false,
       runtimeCaching: [
