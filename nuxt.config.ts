@@ -79,7 +79,7 @@ export default defineNuxtConfig({
     },
     manifest: {
       id: 'mobile.bunkerclock.org',
-      start_url: 'https://warm-torte-138e45.netlify.app/',
+      start_url: 'https://warm-torte-138e45.netlify.app',
       name: 'BunkerClock',
       short_name: 'Clock',
       description: 'The ultimate poker clock for your games.',
@@ -122,7 +122,7 @@ export default defineNuxtConfig({
 
   // Static Assets Optimization
   app: {
-    baseURL: 'https://warm-torte-138e45.netlify.app/', // Set base URL for your app
+    baseURL: 'https://warm-torte-138e45.netlify.app', // Set base URL for your app
   },
 
   // Build Configuration
