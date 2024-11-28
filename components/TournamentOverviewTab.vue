@@ -1,5 +1,5 @@
 <template>
-    <v-row no-gutters style="font-family: 'LightStories';">
+    <v-row style="font-family: 'LightStories';">
         <v-col class="tournament-box" cols="3">
             <v-img
                 src="/icons/bunkerclock.png"
@@ -47,6 +47,76 @@
             </v-row>
         </v-col>
     </v-row>
+    <v-row style="font-family: 'LightStories';">
+        <v-col cols="8"  style="border: 1px solid;" class=" pb-5">
+            <v-row>
+                <v-col cols="12" class="text-center pb-0">Blinds</v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="4" class="py-0">
+                    <div v-for="(level, index) in firstThird" :key="'first-' + index">
+                        <div v-if="!level.isBreak">
+                            <strong>Level: {{ levels.filter(l => !l.isBreak).indexOf(level) + 1 }}</strong>: {{ level.smallBlind }} / {{ level.bigBlind }}
+                        </div>
+                        <div v-else>
+                            <strong>Pause</strong>
+                        </div>
+                    </div>
+                </v-col>
+
+                <!-- Second Column (Second third of levels) -->
+                <v-col cols="4" class="py-0">
+                    <div v-for="(level, index) in secondThird" :key="'second-' + index">
+                        <div v-if="!level.isBreak">
+                            <strong>Level: {{ levels.filter(l => !l.isBreak).indexOf(level) + 1 }}</strong>: {{ level.smallBlind }} / {{ level.bigBlind }}
+                        </div>
+                        <div v-else>
+                            <strong>Pause</strong>
+                        </div>
+                    </div>
+                </v-col>
+
+                <!-- Third Column (Last third of levels) -->
+                <v-col cols="4" class="py-0">
+                    <div v-for="(level, index) in thirdThird" :key="'third-' + index">
+                        <div v-if="!level.isBreak">
+                            <strong>Level: {{ levels.filter(l => !l.isBreak).indexOf(level) + 1 }}</strong>: {{ level.smallBlind }} / {{ level.bigBlind }}
+                        </div>
+                        <div v-else>
+                            <strong>Pause</strong>
+                        </div>
+                    </div>
+                </v-col>
+            </v-row>
+        </v-col>
+        <v-col cols="4"  style="border: 1px solid;" class="pb-5">
+            <v-row>
+                <v-col>Preise</v-col>
+            </v-row>
+            <v-row>
+                <v-col class="py-0" cols="4">Pot</v-col>
+                <v-col class="py-0" cols="8">{{ totalPot }}</v-col>
+            </v-row>
+            <v-row>
+                <v-col class="py-0" cols="12">
+                    <hr class="mb-2" />
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col class="py-0" cols="4">1. Platz</v-col>
+                <v-col class="py-0" cols="8">{{ (totalPot * 0.5).toFixed(2) }}</v-col>
+            </v-row>
+            <v-row>
+                <v-col class="py-0" cols="4">2. Platz</v-col>
+                <v-col class="py-0" cols="8">{{ (totalPot * 0.3).toFixed(2) }}</v-col>
+            </v-row>
+            <v-row>
+                <v-col class="py-0" cols="4">3. Platz</v-col>
+                <v-col class="py-0" cols="8">{{ (totalPot * 0.2).toFixed(2) }}</v-col>
+            </v-row>
+        </v-col>
+    </v-row>
+    
 </template>
 <script lang ="ts" setup>
 import fiveMinuteBlindUp from '@/assets/sounds/blinds_up_5_min.mp3';
@@ -73,13 +143,16 @@ const tournament = computed(() => {
 })
 
 const playersOut = computed(() => {
-    return tournament.value?.players?.reduce((sum, item) => sum + item.out, 0);
+    return tournament.value?.players?.reduce((sum, item) => sum + item.out, 0) ?? 0;
 })
 const playersRebuys = computed(() => {
-    return tournament.value?.players?.reduce((sum, item) => sum + item.rebuys, 0);
+    return tournament.value?.players?.reduce((sum, item) => sum + item.rebuys, 0) ?? 0;
 })
 const playersAddons = computed(() => {
-    return tournament.value?.players?.reduce((sum, item) => sum + item.addons, 0);
+    return tournament.value?.players?.reduce((sum, item) => sum + item.addons, 0) ?? 0;
+})
+const totalPot = computed(() => {
+    return (playersAddons.value + playersRebuys.value + (tournament.value?.players?.length ?? 0)) * (tournament.value?.settings.buyIn ?? 0);
 })
 const remainingPlayers = computed(() => {
     return (tournament.value?.players?.length ?? 0) - (playersOut.value || 0);
@@ -102,9 +175,24 @@ const averageStack = computed(() => {
 })
 
 const currentLevelIndex = ref(0)
-const levels = computed(() => tournament.value?.settings.levels)
+const levels = computed(() => tournament.value?.settings.levels ?? [])
 const currentLevel = computed(() => levels.value && levels.value[currentLevelIndex.value]);
 const nextLevel = computed(() => (levels.value && levels.value.length > currentLevelIndex.value) && levels.value[currentLevelIndex.value + 1]);
+
+const firstThird = computed(() => {
+  const thirdLength = Math.ceil(levels.value.length / 3);  // Round up to ensure the first two columns get more if needed
+  return levels.value.slice(0, thirdLength);
+});
+
+const secondThird = computed(() => {
+  const thirdLength = Math.ceil(levels.value.length / 3);
+  return levels.value.slice(firstThird.value.length, firstThird.value.length + thirdLength);
+});
+
+const thirdThird = computed(() => {
+  // Last third should get the remaining levels
+  return levels.value.slice(firstThird.value.length + secondThird.value.length);
+});
 
 function forward() {
     if(levels.value && levels.value.length > currentLevelIndex.value) {
@@ -167,5 +255,29 @@ watch(mainTimer, () => {
 .stack-number {
     font-size: 35px;
     font-weight: bold;
+}
+</style>
+
+<style scoped>
+.flow-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjust column width */
+  grid-auto-rows: minmax(100px, auto); /* Row height adjusts automatically */
+  grid-auto-flow: column; /* Fill down first, then right */
+  gap: 16px; /* Space between items */
+  height: 100%; /* Fill remaining height */
+}
+
+.level-cell {
+  font-size: small;
+  border: 1px solid #ddd;
+  padding: 8px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.level-cell.is-break {
+  font-style: italic;
+  font-weight: bold;
 }
 </style>
