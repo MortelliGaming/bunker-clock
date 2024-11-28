@@ -126,6 +126,9 @@
                         @click="() => props.onClick()">Zurück</v-btn>
                 </template>
                 <template #next="{ props }">
+                    <v-btn
+                        v-if="step == 1"
+                        @click="uploadTournament">Import</v-btn>
                     <v-btn v-if="step < 3" :disabled="isStepInvalid" @click="() => props.onClick()">Next</v-btn>
                     <v-btn v-else :disabled="isStepInvalid" @click="() => saveTournament()">Erstellen</v-btn>
                 </template>
@@ -134,6 +137,7 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <input type="file" ref="fileInput" accept=".json" style="display: none" @change="handleFileUpload" />
   </template>
   
   <script lang="ts" setup>
@@ -176,7 +180,15 @@
   const templates = ['Template 1', 'Template 2', 'Template 3'];
   
   const chipset = ref('');
-  
+    const fileInput = ref<HTMLInputElement | null>(null); // Reference to the file input
+
+  // Trigger the file selection dialog programmatically
+  const uploadTournament = () => {
+    if (fileInput.value) {
+      fileInput.value.click(); // Trigger the file input dialog
+    }
+  };
+
   const nextStep = () => {
     if (step.value < 3) step.value++;
   };
@@ -201,6 +213,39 @@
     dialog.value = true;
   };
   
+  const handleFileUpload = (event: Event) => {
+    const fileInput = event.target as HTMLInputElement;
+
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      const file = fileInput.files[0];
+
+      // Read the file as text
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          // Parse the JSON content of the file
+          const jsonData = JSON.parse(reader.result as string);
+
+          // Find the tournament to update (you can customize this)
+          const tournamentIndex = tournamentsStore.tournaments.findIndex(t => t.id === jsonData.id);
+          if (tournamentIndex !== -1) {
+            // Update the tournament data with the parsed JSON
+            tournamentsStore.tournaments[tournamentIndex] = jsonData;
+          } else {
+            tournamentsStore.tournaments.push(jsonData);
+          }
+          tournamentsStore.saveTournamentsToLocalStorage();
+        } catch (error) {
+          alert('Error parsing the file. Please make sure it is a valid JSON.');
+        }
+      };
+      // Read the file as text
+      reader.readAsText(file);
+    } else {
+      alert('No file selected!');
+    }
+    closeDialog();
+  };
   
   const isStepInvalid = computed(() => {
     switch (step.value) {

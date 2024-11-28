@@ -23,11 +23,14 @@
                 </v-btn>
             </v-col>
             <v-col class="d-flex align-center">
-                <v-btn @click.stop="registerTournament">
+                <v-btn @click.stop="() => {}">
                     Anmelden
                 </v-btn>
             </v-col>
             <v-col>
+                <v-btn icon @click.stop="downloadTournament">
+                    <v-icon>mdi-download</v-icon>
+                </v-btn>
                 <v-btn icon @click.stop="deleteTournament">
                     <v-icon>mdi-delete</v-icon>
                 </v-btn>
@@ -41,7 +44,7 @@
   </template>
   
   <script lang="ts" setup>
-  const emit = defineEmits(['open', 'delete'])
+  const emit = defineEmits(['open', 'delete', 'download'])
 
   const props = defineProps({
     title: String,
@@ -51,12 +54,12 @@
 
   const openTournament = () => {
     emit('open')
-    
     // Handle open tournament logic
   };
   
-  const registerTournament = () => {
+  const downloadTournament = () => {
     // Handle register tournament logic
+    emit('download')
   };
   
   const deleteTournament = () => {

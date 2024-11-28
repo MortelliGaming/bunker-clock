@@ -58,6 +58,7 @@
                 :expected-players="tournament.settings.expectedPlayers"
                 @open="() => navigateToTournament(tournament.id)"
                 @delete="() => deleteTournament(tournament.id)"
+                @download="() => downloadTournament(tournament.id)"
             />
         </v-col>
     </v-row>
@@ -87,7 +88,35 @@
     console.log(newTournmentDialog.value);
     tournamentsStore.removeTournament(id)
   };
-  
+
+  const downloadTournament = (id: string) => {
+    console.log('id: string');
+    const tournamentToDownload = tournamentsStore.tournaments.find(t => t.id == id)
+    if(tournamentToDownload) {
+      // Convert the tournament object to a JSON string
+      const jsonString = JSON.stringify(tournamentToDownload, null, 2); // Pretty-print with 2 spaces
+      
+      // Create a Blob from the JSON string
+      const blob = new Blob([jsonString], { type: 'application/json' });
+
+      // Create a temporary link element
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      
+      // Set the file name
+      link.download = `tournament_${id}.json`;
+      
+      // Append the link to the document body (needed for Firefox)
+      document.body.appendChild(link);
+      
+      // Trigger the download by simulating a click
+      link.click();
+      
+      // Clean up by removing the link element
+      document.body.removeChild(link);
+    }
+  };
+
   const joinClub = () => {
     console.log('Join existing club');
   };
