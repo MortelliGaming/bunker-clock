@@ -42,7 +42,7 @@ async function getTournamentsFromFauna() {
     `);
     console.log(result)
     // Extrahiert und gibt nur die Daten der Turniere zurück
-    return result.data.page.data.map((item: any) => item.data) ?? []; // Nur die Daten extrahieren
+    return result.data.data.map((item: any) => item.data) ?? []; // Nur die Daten extrahieren
   } catch (error: any) {
     console.error('Fehler beim Abrufen der Turniere aus FaunaDB:', error);
     throw new Error('Fehler beim Abrufen der Turniere aus FaunaDB: ' + error.message);
