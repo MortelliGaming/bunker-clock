@@ -38,9 +38,7 @@ async function getTournamentsFromFauna() {
   try {
     // FQL-Abfrage, um alle Dokumente aus der 'tournaments' Collection zu erhalten
     const result = await client.query(fql`
-      let tournaments = Paginate(Documents(Collection("tournaments")))
-      let tournamentData = Map(tournaments, Lambda('X', Get(Var('X'))))
-      tournamentData
+      tournaments.all()
     `);
 
     // Extrahiert und gibt nur die Daten der Turniere zurück
