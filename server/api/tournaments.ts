@@ -79,7 +79,7 @@ exports.handler = async (event: any) => {
       };
     } catch (error) {
       console.error('Error loading tournaments:', error);
-      return { statusCode: 500, body: JSON.stringify({ success: false, message: 'Error loading tournaments.' }) };
+      return { statusCode: 200, body: JSON.stringify([]) };
     }
   }
 
