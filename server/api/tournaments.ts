@@ -40,9 +40,9 @@ async function getTournamentsFromFauna() {
     const result = await client.query(fql`
       tournaments.all()
     `);
-
+    console.log(result)
     // Extrahiert und gibt nur die Daten der Turniere zurück
-    return result.data.map((item: any) => item.data); // Nur die Daten extrahieren
+    return result.data?.map((item: any) => item.data) ?? []; // Nur die Daten extrahieren
   } catch (error: any) {
     console.error('Fehler beim Abrufen der Turniere aus FaunaDB:', error);
     throw new Error('Fehler beim Abrufen der Turniere aus FaunaDB: ' + error.message);
