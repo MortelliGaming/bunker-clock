@@ -12,7 +12,7 @@
   "dependencies": {
     "@netlify/blobs": "^8.1.0",
     "@pinia/nuxt": "^0.7.0",
-    "faunadb": "^4.8.1",
+    "fauna": "^2.3.0",
     "netlify-cli": "^17.37.2",
     "nuxt": "^3.14.1592",
     "pinia": "^2.2.6",

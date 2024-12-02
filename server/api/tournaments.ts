@@ -1,32 +1,47 @@
-import { Client, query as q } from 'faunadb';
+import { Client, fql, FaunaError, QuerySuccess } from 'fauna';
+import { Tournament } from '~/stores/tournaments';
 
 const client = new Client({
   secret: 'fnAFxqTjO-AA0Nl9jIeNPo_UAm5kjpxn6gifrlbq', // Fetch your FaunaDB secret from environment variables
 });
 
+// Function to save tournaments to FaunaDB
 async function saveTournamentsToFauna(tournaments: any) {
   try {
-    // Assuming `tournaments` is an array of tournament objects
-    const result = await client.query(
-      q.Create(q.Collection('tournaments'), {
-        data: { tournaments: tournaments },
-      })
-    );
-    return result;
+    // Iterate through the tournaments and save each one
+    for (const tournament of tournaments) {
+      const tournamentName = tournament.name;
+
+      // Check if tournament exists
+      const tournamentExistsQuery = fql`Tournament.byName(${tournamentName}) != null`;
+      const tournamentExists = await client.query(tournamentExistsQuery);
+
+      if (tournamentExists) {
+        // Update existing tournament
+        const updateTournamentQuery = fql`Tournament.update(${tournamentName}, ${tournament})`;
+        await client.query(updateTournamentQuery);
+        console.log(`Tournament "${tournamentName}" updated successfully.`);
+      } else {
+        // Insert new tournament
+        const insertTournamentQuery = fql`Tournament.create({ name: ${tournamentName}, ...${tournament} })`;
+        await client.query(insertTournamentQuery);
+        console.log(`Tournament "${tournamentName}" created successfully.`);
+      }
+    }
   } catch (error: any) {
     throw new Error('Error saving tournaments to FaunaDB: ' + error.message);
   }
 }
 
+// Function to get all tournaments from FaunaDB
 async function getTournamentsFromFauna() {
   try {
     const result = await client.query(
-      q.Map(
-        q.Paginate(q.Documents(q.Collection('tournaments'))),
-        q.Lambda('X', q.Get(q.Var('X')))
-      )
-    ) as any;
-    return result.data.map((item: any) => item.data.tournaments); // Return the tournaments array
+      fql`
+        Tournament.all()
+      `
+    );
+    return result.data;
   } catch (error: any) {
     throw new Error('Error retrieving tournaments from FaunaDB: ' + error.message);
   }
@@ -65,6 +80,7 @@ function validateTournaments(data: any) {
   return null; // If validation passes
 }
 
+// Lambda handler function
 exports.handler = async (event: any) => {
   const originError = validateOrigin(event.headers); // Ensure requests come from the allowed origin
   if (originError) return originError;
@@ -80,11 +96,11 @@ exports.handler = async (event: any) => {
       if (validationError) return validationError;
 
       // Save tournaments to FaunaDB
-      const saveResult = await saveTournamentsToFauna(body.data);
+      await saveTournamentsToFauna(body.data);
 
       return {
         statusCode: 200,
-        body: JSON.stringify({ success: true, message: 'Tournaments saved successfully!', result: saveResult }),
+        body: JSON.stringify({ success: true, message: 'Tournaments saved successfully!' }),
       };
     } catch (error) {
       console.error('Error saving tournaments:', error);
