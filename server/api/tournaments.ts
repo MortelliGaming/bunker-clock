@@ -4,25 +4,23 @@ import { Tournament } from '~/stores/tournaments';
 const client = new Client({
   secret: 'fnAFxqTjO-AA0Nl9jIeNPo_UAm5kjpxn6gifrlbq', // Fetch your FaunaDB secret from environment variables
 });
-
-// Function to save or update tournaments to FaunaDB
 async function saveTournamentsToFauna(tournaments: Tournament[]) {
   try {
     for (const tournament of tournaments) {
       const tournamentId = tournament.id; // Assuming 'id' is the unique key for each tournament
 
-      // Check if tournament exists by its 'id'
-      const tournamentExistsQuery = fql`tournaments.byId(${tournamentId}) != null`;
+      // Check if tournament exists by its 'id' (using fql)
+      const tournamentExistsQuery = fql`exists(tournaments.byId(${tournamentId}))`;
       const tournamentExists = await client.query(tournamentExistsQuery);
 
       if (tournamentExists) {
         // Update existing tournament by its 'id'
-        const updateTournamentQuery = fql`tournaments.update(${tournamentId}, ${tournament})`;
+        const updateTournamentQuery = fql`update(tournaments.byId(${tournamentId}), { data: ${JSON.stringify(tournament)} })`;
         await client.query(updateTournamentQuery);
         console.log(`Tournament with id "${tournamentId}" updated successfully.`);
       } else {
         // Insert new tournament
-        const insertTournamentQuery = fql`tournaments.create({ id: ${tournamentId}, ...${tournament} })`;
+        const insertTournamentQuery = fql`create(tournaments, { id: ${tournamentId}, ...${JSON.stringify(tournament)} })`;
         await client.query(insertTournamentQuery);
         console.log(`Tournament with id "${tournamentId}" created successfully.`);
       }
