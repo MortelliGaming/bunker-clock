@@ -1,30 +1,25 @@
-import { promises as fs } from 'fs';
-import path from 'path';
-import { H3Event } from 'h3';
-import { Tournament } from '~/stores/tournaments';
+// netlify/functions/tournaments.js
 
-const dirPath = path.dirname('./data'); // Extract the directory path
+const { promises: fs } = require('fs');
+const path = require('path');
+
+const dirPath = path.resolve('./data'); // Absolute path to the data folder
 const filePath = path.resolve('./data/tournaments.json'); // Path to the JSON file
 
 // Middleware to validate the origin
-function validateOrigin(event: H3Event): void {
-    const allowedOrigins = ['https://bunkerclock.mortelligaming.org/', 'http://localhost:5173/'];
-    const origin = event.headers.get('referer') || event.headers.get('host') || '';
-    if (!allowedOrigins.includes(origin)) {
-        throw createError({
-        statusCode: 403,
-        statusMessage: 'Forbidden: Invalid Origin',
-        });
-    }
+function validateOrigin(headers: any) {
+  const allowedOrigins = ['https://bunkerclock.mortelligaming.org/', 'http://localhost:5173/'];
+  const origin = headers['referer'] || headers['host'] || '';
+  if (!allowedOrigins.includes(origin)) {
+    return { statusCode: 403, body: JSON.stringify({ error: 'Forbidden: Invalid Origin' }) };
+  }
+  return null;
 }
 
 // Function to validate tournament data
-function validateTournaments(data: unknown): asserts data is Tournament[] {
+function validateTournaments(data: any) {
   if (!Array.isArray(data)) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Invalid data: Expected an array of tournaments',
-    });
+    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid data: Expected an array of tournaments' }) };
   }
 
   for (const tournament of data) {
@@ -38,51 +33,58 @@ function validateTournaments(data: unknown): asserts data is Tournament[] {
       !Array.isArray(tournament.players) ||
       typeof tournament.settings !== 'object'
     ) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: `Invalid tournament structure: ${JSON.stringify(tournament)}`,
-      });
+      return { statusCode: 400, body: JSON.stringify({ error: `Invalid tournament structure: ${JSON.stringify(tournament)}` }) };
     }
   }
+  return null; // If validation passes
 }
 
-export default defineEventHandler(async (event) => {
-  validateOrigin(event); // Ensure requests come from the allowed origin
+exports.handler = async (event: any) => {
+  const originError = validateOrigin(event.headers); // Ensure requests come from the allowed origin
+  if (originError) return originError;
 
-  if (event.req.method === 'POST') {
+  if (event.httpMethod === 'POST') {
     try {
-      const body = await readBody(event); // Read the incoming JSON
+      const body = JSON.parse(event.body); // Read the incoming JSON
       if (!body || !Array.isArray(body.data)) {
-        throw createError({
-          statusCode: 400,
-          statusMessage: 'Invalid request body: Expected { data: Tournament[] }',
-        });
+        return { statusCode: 400, body: JSON.stringify({ error: 'Invalid request body: Expected { data: Tournament[] }' }) };
       }
 
-      validateTournaments(body.data); // Validate the structure of Tournament[]
+      const validationError = validateTournaments(body.data); // Validate the structure of Tournament[]
+      if (validationError) return validationError;
 
-      // Ensure the directory exists
+      // Ensure the directory exists (Netlify serverless functions can use local filesystem within the function)
       await fs.mkdir(dirPath, { recursive: true });
 
       // Save tournaments to JSON file
       await fs.writeFile(filePath, JSON.stringify(body.data, null, 2));
-      return { success: true, message: 'Tournaments saved successfully!' };
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ success: true, message: 'Tournaments saved successfully!' }),
+      };
     } catch (error) {
       console.error('Error saving tournaments:', error);
-      return { success: false, message: 'Error saving tournaments.', error };
+      return { statusCode: 500, body: JSON.stringify({ success: false, message: 'Error saving tournaments.' }) };
     }
   }
 
-  if (event.req.method === 'GET') {
+  if (event.httpMethod === 'GET') {
     try {
       const data = await fs.readFile(filePath, 'utf-8'); // Read the JSON file
-      return { success: true, message: JSON.parse(data) };
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ success: true, data: JSON.parse(data) }),
+      };
     } catch (error) {
       console.error('Error loading tournaments:', error);
-      return { success: false, message: 'Error loading tournaments.', error };
+      return { statusCode: 500, body: JSON.stringify({ success: false, message: 'Error loading tournaments.' }) };
     }
   }
 
   // Fallback for unsupported methods
-  return { success: false, message: 'Unsupported HTTP method.' };
-});
+  return {
+    statusCode: 405,
+    body: JSON.stringify({ success: false, message: 'Method Not Allowed' }),
+  };
+};

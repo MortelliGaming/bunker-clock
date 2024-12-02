@@ -16,7 +16,6 @@ export default defineNuxtConfig({
       },
     },
   },
-
   // PWA Configuration
   pwa: {
     registerType: 'autoUpdate',
