@@ -1,7 +1,7 @@
 import { Client, query as q } from 'faunadb';
 
 const client = new Client({
-  secret: 'fnAFxqRl9BAAy0_-6SqtKfUv_jD1c6c9wg96et5f', // Fetch your FaunaDB secret from environment variables
+  secret: 'fnAFxqTjO-AA0Nl9jIeNPo_UAm5kjpxn6gifrlbq', // Fetch your FaunaDB secret from environment variables
 });
 
 async function saveTournamentsToFauna(tournaments: any) {
