@@ -25,3 +25,5 @@ logs
 
 # serive worker
 sw.*
+# Local Netlify folder
+.netlify
