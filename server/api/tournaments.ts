@@ -1,11 +1,36 @@
-// netlify/functions/tournaments.js
-import { getStore } from "@netlify/blobs";
+import { Client, query as q } from 'faunadb';
 
-const { promises: fs } = require('fs');
-const path = require('path');
+const client = new Client({
+  secret: 'fnAFxqRl9BAAy0_-6SqtKfUv_jD1c6c9wg96et5f', // Fetch your FaunaDB secret from environment variables
+});
 
-// const dirPath = path.resolve('./'); // Absolute path to the data folder
-const filePath = path.resolve('./tournaments.json'); // Path to the JSON file
+async function saveTournamentsToFauna(tournaments: any) {
+  try {
+    // Assuming `tournaments` is an array of tournament objects
+    const result = await client.query(
+      q.Create(q.Collection('tournaments'), {
+        data: { tournaments: tournaments },
+      })
+    );
+    return result;
+  } catch (error: any) {
+    throw new Error('Error saving tournaments to FaunaDB: ' + error.message);
+  }
+}
+
+async function getTournamentsFromFauna() {
+  try {
+    const result = await client.query(
+      q.Map(
+        q.Paginate(q.Documents(q.Collection('tournaments'))),
+        q.Lambda('X', q.Get(q.Var('X')))
+      )
+    ) as any;
+    return result.data.map((item: any) => item.data.tournaments); // Return the tournaments array
+  } catch (error: any) {
+    throw new Error('Error retrieving tournaments from FaunaDB: ' + error.message);
+  }
+}
 
 // Middleware to validate the origin
 function validateOrigin(headers: any) {
@@ -54,14 +79,12 @@ exports.handler = async (event: any) => {
       const validationError = validateTournaments(body.data); // Validate the structure of Tournament[]
       if (validationError) return validationError;
 
-      // Save tournaments to JSON file
-
-      const construction = getStore("bunkerclock");
-      await construction.set("tournaments", JSON.stringify(body.data, null, 2));
+      // Save tournaments to FaunaDB
+      const saveResult = await saveTournamentsToFauna(body.data);
 
       return {
         statusCode: 200,
-        body: JSON.stringify({ success: true, message: 'Tournaments saved successfully!' }),
+        body: JSON.stringify({ success: true, message: 'Tournaments saved successfully!', result: saveResult }),
       };
     } catch (error) {
       console.error('Error saving tournaments:', error);
@@ -71,16 +94,15 @@ exports.handler = async (event: any) => {
 
   if (event.httpMethod === 'GET') {
     try {
-      const construction = getStore("bunkerclock");
-      const tournaments = await construction.get("tournaments");
+      const tournaments = await getTournamentsFromFauna();
 
       return {
         statusCode: 200,
-        body: JSON.stringify({ success: true, data: JSON.parse(tournaments) }),
+        body: JSON.stringify({ success: true, data: tournaments }),
       };
     } catch (error) {
       console.error('Error loading tournaments:', error);
-      return { statusCode: 200, body: JSON.stringify([]) };
+      return { statusCode: 500, body: JSON.stringify({ success: false, message: 'Error retrieving tournaments.' }) };
     }
   }
 
