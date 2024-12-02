@@ -1,0 +1,173 @@
+[
+  {
+    "id": "dl0ckdzyzsa",
+    "name": "Bunker Poker",
+    "date": "2024-12-08",
+    "startTime": "20:00",
+    "template": "Template 1",
+    "chipset": [
+      5,
+      25,
+      50,
+      100,
+      500,
+      1000,
+      5000,
+      10000
+    ],
+    "players": [],
+    "settings": {
+      "levels": [
+        {
+          "id": 1732637606351,
+          "time": 30,
+          "smallBlind": 5,
+          "bigBlind": 10,
+          "isBreak": false
+        },
+        {
+          "id": 1732637606351,
+          "time": 30,
+          "smallBlind": "10",
+          "bigBlind": "25",
+          "isBreak": false
+        },
+        {
+          "id": 1732637615807,
+          "time": 15,
+          "smallBlind": 0,
+          "bigBlind": 0,
+          "isBreak": true
+        },
+        {
+          "id": 1732637615807,
+          "time": 30,
+          "smallBlind": "25",
+          "bigBlind": "50",
+          "isBreak": false
+        },
+        {
+          "id": 1732637624172,
+          "time": 30,
+          "smallBlind": "50",
+          "bigBlind": "100",
+          "isBreak": false
+        },
+        {
+          "id": 1732637632081,
+          "time": 15,
+          "smallBlind": 0,
+          "bigBlind": 0,
+          "isBreak": true
+        },
+        {
+          "id": 1732637632081,
+          "time": 30,
+          "smallBlind": "75",
+          "bigBlind": "150",
+          "isBreak": false
+        },
+        {
+          "id": 1732637639322,
+          "time": 30,
+          "smallBlind": "100",
+          "bigBlind": "200",
+          "isBreak": false
+        },
+        {
+          "id": 1732637650093,
+          "time": 15,
+          "smallBlind": 0,
+          "bigBlind": 0,
+          "isBreak": true
+        },
+        {
+          "id": 1732637650093,
+          "time": 20,
+          "smallBlind": "200",
+          "bigBlind": "400",
+          "isBreak": false
+        },
+        {
+          "id": 1732637657986,
+          "time": 20,
+          "smallBlind": "400",
+          "bigBlind": "800",
+          "isBreak": false
+        },
+        {
+          "id": 1732637675927,
+          "time": 10,
+          "smallBlind": 0,
+          "bigBlind": 0,
+          "isBreak": true
+        },
+        {
+          "id": 1732637668217,
+          "time": 20,
+          "smallBlind": "800",
+          "bigBlind": "1600",
+          "isBreak": false
+        },
+        {
+          "id": 1732637680512,
+          "time": 20,
+          "smallBlind": "1600",
+          "bigBlind": "3200",
+          "isBreak": false
+        },
+        {
+          "id": 1732826263153,
+          "time": 10,
+          "smallBlind": 0,
+          "bigBlind": 0,
+          "isBreak": true
+        },
+        {
+          "id": 1732826274624,
+          "time": 20,
+          "smallBlind": "3200",
+          "bigBlind": "6400",
+          "isBreak": false
+        },
+        {
+          "id": 1732826274624,
+          "time": 20,
+          "smallBlind": "6400",
+          "bigBlind": "12800",
+          "isBreak": false
+        },
+        {
+          "id": 1732826274624,
+          "time": 15,
+          "smallBlind": "12800",
+          "bigBlind": "25600",
+          "isBreak": false
+        },
+        {
+          "id": 1732826274624,
+          "time": 15,
+          "smallBlind": "25600",
+          "bigBlind": "51200",
+          "isBreak": false
+        }
+      ],
+      "expectedPlayers": 9,
+      "managePlayers": true,
+      "playerParameters": {
+        "maxPlayers": "10",
+        "playersPerTable": "10"
+      },
+      "duration": 5,
+      "trackKnockouts": true,
+      "managePayouts": true,
+      "buyIn": 50,
+      "smallBlind": 5,
+      "startStack": 5000,
+      "tournamentType": "Rebuy-Turnier",
+      "antes": false,
+      "rebuyChips": 5000,
+      "addonChips": 5000
+    }
+  }
+]

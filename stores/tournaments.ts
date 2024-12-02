@@ -85,15 +85,49 @@ export const useTournamentsStore = defineStore('tournament', () => {
 
   const saveTournamentsToLocalStorage = () => {
     localStorage.setItem('bunker_clock_tournaments', JSON.stringify(tournaments.value))
+    try {
+      saveTournaments(tournaments.value)
+    } catch {}
   };
 
-  const loadTournamentsFromLocalStorage = () => {
+  const loadTournamentsFromLocalStorage = async () => {
+    try {
+      await loadTournaments()
+      saveTournamentsToLocalStorage();
+      return;
+    } catch {}
     const savedTournaments = localStorage.getItem('bunker_clock_tournaments');
     if(savedTournaments)  {
         tournaments.value = JSON.parse(savedTournaments);
     }
   };
-
+  async function saveTournaments(tournamentData: Tournament[]) {
+    try {
+      const response = await $fetch('/api/tournaments', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ data: tournamentData }),
+      })  
+      console.log('Tournament saved successfully:', response);
+    } catch (error) {
+      console.error('Error saving tournament:', error);
+    }
+  };
+  
+  // Function to load tournaments from the server
+  async function loadTournaments() {
+    try {
+      const response = await $fetch('/api/tournaments');
+      tournaments.value = (response as any).message as Tournament[]; // Update local state with loaded tournaments
+      console.log('Tournaments loaded:', tournaments.value);
+    } catch (error) {
+      console.error('Error loading tournaments:', error);
+    }
+  };
+  
   return {
     tournaments,
     addTournament,

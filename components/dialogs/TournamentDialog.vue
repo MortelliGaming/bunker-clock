@@ -112,15 +112,19 @@
           const jsonData = JSON.parse(reader.result as string);
 
           // Find the tournament to update (you can customize this)
-          const tournamentIndex = tournaments.value.findIndex(t => t.id === jsonData.id);
+          const tournamentIndex = (tournaments.value ?? []).findIndex(t => t.id === jsonData.id);
           if (tournamentIndex !== -1) {
             // Update the tournament data with the parsed JSON
             tournaments.value[tournamentIndex] = jsonData;
           } else {
+            if(!tournaments.value) {
+              tournaments.value = [];
+            }
             tournaments.value.push(jsonData);
           }
           saveTournamentsToLocalStorage();
         } catch (error) {
+          console.log(error)
           alert('Error parsing the file. Please make sure it is a valid JSON.');
         }
       };
