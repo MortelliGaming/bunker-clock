@@ -6,7 +6,7 @@ const client = new Client({
 });
 
 // Function to save or update tournaments to FaunaDB
-async function saveTournamentsToFauna(tournaments: any) {
+async function saveTournamentsToFauna(tournaments: Tournament[]) {
   try {
     for (const tournament of tournaments) {
       const tournamentId = tournament.id; // Assuming 'id' is the unique key for each tournament
@@ -39,12 +39,14 @@ async function getTournamentsFromFauna() {
     // FQL-Abfrage, um alle Dokumente aus der 'tournaments' Collection zu erhalten
     const result = await client.query(fql`
       let tournaments = Paginate(Documents(Collection("tournaments")))
-      tournaments
+      let tournamentData = Map(tournaments, Lambda('X', Get(Var('X'))))
+      tournamentData
     `);
 
     // Extrahiert und gibt nur die Daten der Turniere zurück
     return result.data.map((item: any) => item.data); // Nur die Daten extrahieren
   } catch (error: any) {
+    console.error('Fehler beim Abrufen der Turniere aus FaunaDB:', error);
     throw new Error('Fehler beim Abrufen der Turniere aus FaunaDB: ' + error.message);
   }
 }
