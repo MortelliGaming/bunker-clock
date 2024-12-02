@@ -1,4 +1,5 @@
 // netlify/functions/tournaments.js
+import { getStore } from "@netlify/blobs";
 
 const { promises: fs } = require('fs');
 const path = require('path');
@@ -54,7 +55,9 @@ exports.handler = async (event: any) => {
       if (validationError) return validationError;
 
       // Save tournaments to JSON file
-      await fs.writeFile(filePath, JSON.stringify(body.data, null, 2));
+
+      const construction = getStore("bunkerclock");
+      await construction.set("tournaments", JSON.stringify(body.data, null, 2));
 
       return {
         statusCode: 200,
@@ -68,10 +71,12 @@ exports.handler = async (event: any) => {
 
   if (event.httpMethod === 'GET') {
     try {
-      const data = await fs.readFile(filePath, 'utf-8'); // Read the JSON file
+      const construction = getStore("bunkerclock");
+      const tournaments = await construction.get("tournaments");
+
       return {
         statusCode: 200,
-        body: JSON.stringify({ success: true, data: JSON.parse(data) }),
+        body: JSON.stringify({ success: true, data: JSON.parse(tournaments) }),
       };
     } catch (error) {
       console.error('Error loading tournaments:', error);
