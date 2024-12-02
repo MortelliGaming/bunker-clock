@@ -99,11 +99,11 @@
   
   // Router and store setup
   const router = ref(useRouter());
-  const tournamentsStore = useTournamentsStore();
-  
+  const { tournaments } = storeToRefs(useTournamentsStore())
+  const { updateTournament } = useTournamentsStore()
   // Reactive tournament data
   const tournament = computed(() => {
-    return tournamentsStore.tournaments.find(t => t.id === router.value.currentRoute.params.id) ?? null;
+    return tournaments.value.find(t => t.id === router.value.currentRoute.params.id) ?? null;
   });
   
   // Reactive form data setup
@@ -136,7 +136,7 @@
       tournament.value.settings.addonChips = formData.addonChips;
       tournament.value.settings.startStack = formData.startStack;
       tournament.value.settings.duration = formData.duration;
-      tournamentsStore.updateTournament(tournament.value.id, tournament.value);
+      updateTournament(tournament.value.id, tournament.value);
     }
     
     console.log('Form submitted:', formData);

@@ -5,29 +5,29 @@
       <!-- Running Time -->
       <v-col class="time-box text-left d-flex align-center">
         <v-icon color="orange">mdi-av-timer</v-icon>
-        <div class="pt-1 ml-2">{{ formatTime(timerStore.totalPlayTime) }}</div>
+        <div class="pt-1 ml-2">{{ formatTime(totalPlayTime) }}</div>
       </v-col>
       <v-col></v-col>
       <!-- Next Break -->
       <v-col class="time-box justify-end d-flex align-center pr-3">
-        <div class="pt-1 mr-2">{{ formatTime(timerStore.nextBreakTime) }}</div>
+        <div class="pt-1 mr-2">{{ formatTime(nextBreakTime) }}</div>
         <v-icon color="orange">mdi-coffee-outline</v-icon>
       </v-col>
     </v-row>
 
     <!-- Main Timer -->
     <div class="main-timer">
-      <span>{{ formatTime(timerStore.mainTimer) }}</span>
+      <span>{{ formatTime(mainTimer) }}</span>
     </div>
 
     <!-- Slider -->
     <v-slider
       :min="0"
-      :max="timerStore.roundDuration"
-      :model-value.number="timerStore.roundDuration - timerStore.mainTimer"
+      :max="roundDuration"
+      :model-value.number="roundDuration - mainTimer"
       :step="1"
       @update:model-value="(value: number) => {
-        timerStore.updateMainTimer(timerStore.roundDuration - value);
+        updateMainTimer(roundDuration - value);
       }"
       class="mt-4"
       color="orange"
@@ -43,7 +43,7 @@
       </v-btn>
 
       <v-btn icon @click="toggleTimer">
-        <v-icon>{{ timerStore.isRunning ? 'mdi-pause' : 'mdi-play' }}</v-icon>
+        <v-icon>{{ isRunning ? 'mdi-pause' : 'mdi-play' }}</v-icon>
       </v-btn>
 
       <v-btn icon @click="nextLevel">
@@ -58,35 +58,27 @@
 
 <script lang="ts" setup>
 //  BlindsUpSpinenr
-const timerStore = useTimerStore();
+const {
+  mainTimer,
+  isRunning,
+  totalPlayTime,
+  nextBreakTime,
+  roundDuration,
+} = storeToRefs(useTimerStore())
+const { forward, back, toggleTimer, formatTime, updateMainTimer } = useTimerStore()
 const emit = defineEmits()
 
-const currentLevel = computed(() => timerStore.currentLevel)
 // Button actions
 const prevLevel = () => {
-  timerStore.back();
+  back();
 };
 
 const nextLevel = () => {
-  timerStore.forward();
-};
-
-const toggleTimer = () => {
-  timerStore.toggleTimer();
+  forward();
 };
 
 const toggleFullScreen = () => {
   console.log("Toggle Full Screen");
-};
-
-
-// Utility for time formatting
-const formatTime = (seconds: number) => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes.toString().padStart(2, "0")}:${remainingSeconds
-    .toString()
-    .padStart(2, "0")}`;
 };
 </script>
 

@@ -63,29 +63,21 @@
         </v-col>
     </v-row>
     </v-container>
-    <new-tournament-dialog ref="newTournmentDialog"/>
+    <tournament-dialog ref="tournamentDialog"/>
   </template>
   <script lang="ts" setup>
   import { ref } from 'vue';
-  import type NewTournamentDialog from '~/components/NewTournamentDialog.vue';
+  import TournamentDialog from '~/components/dialogs/TournamentDialog.vue';
   
   const router = useRouter()
-  const newTournmentDialog = ref<InstanceType<typeof NewTournamentDialog>>();
-  const tournamentsStore = useTournamentsStore()
-  // Methods to handle button clicks
-  const createClub = () => {
-    console.log('Create new club');
-  };
+  const tournamentDialog = ref<InstanceType<typeof TournamentDialog>>();
+  const tournamentsStore = useTournamentsStore();
 
   const createTournament = () => {
-    console.log('Create new tournament');
-    console.log(newTournmentDialog.value);
-    newTournmentDialog.value?.show()
+    tournamentDialog.value?.show()
   };
 
   const deleteTournament = (id: string) => {
-    console.log('Delete tournament' + id);
-    console.log(newTournmentDialog.value);
     tournamentsStore.removeTournament(id)
   };
 

@@ -31,34 +31,6 @@
                 ></v-text-field>
               </v-col>
             </v-row>
-  
-            <!-- Anzahl der Spieler am Finaltisch
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  v-model="formData.playersAtFinalTable"
-                  label="Anzahl der Spieler am Finaltisch"
-                  type="number"
-                  min="1"
-                  max="10"
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            -->
-            <!-- Zusätzliche Sitze reservieren
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  v-model="formData.playersAtFinalTable"
-                  label="Zusätzliche Sitze reservieren"
-                  type="number"
-                  min="1"
-                  max="1000"
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>  -->
           </v-container>
         </v-card-text>
   
@@ -75,19 +47,19 @@
   </template>
   
   <script lang="ts" setup>
-  import { reactive, ref, computed } from 'vue';
+  import { ref, computed } from 'vue';
   
   const router = ref(useRouter())
-  const tournamentsStore = useTournamentsStore()
+  const { tournaments } = storeToRefs(useTournamentsStore())
+  const { updateTournament } = useTournamentsStore()
+
   const tournament = computed(() => {
-    return tournamentsStore.tournaments.find(t => t.id == router.value.currentRoute.params.id)
+    return tournaments.value.find(t => t.id == router.value.currentRoute.params.id)
   })
   // Reactive form data
   const formData = ref({
     maxPlayers: (tournament.value?.settings.playerParameters?.maxPlayers ?? 0),
     playersPerTable: (tournament.value?.settings.playerParameters?.playersPerTable ?? 0),
-    // playersAtFinalTable: 9,
-    // reserveExtraSeats: 0,
   });
   
   // Form reference
@@ -97,9 +69,7 @@
   const formIsValid = computed(() => {
     return (
       formData.value.maxPlayers > 0 &&
-      formData.value.playersPerTable > 0 // &&
-      // formData.playersAtFinalTable > 0 &&
-      // formData.maxPlayers >= formData.playersPerTable
+      formData.value.playersPerTable > 0
     );
   });
   
@@ -118,7 +88,7 @@
         }
         tournament.value.settings.playerParameters.maxPlayers = formData.value.maxPlayers;
         tournament.value.settings.playerParameters.playersPerTable = formData.value.playersPerTable;
-        tournamentsStore.updateTournament(tournament.value.id, {
+        updateTournament(tournament.value.id, {
             settings: tournament.value.settings,
         })
     }
@@ -131,8 +101,6 @@
         formData.value.maxPlayers = tournament.value.settings.playerParameters.maxPlayers
         formData.value.playersPerTable = tournament.value.settings.playerParameters.playersPerTable
     }
-    // formData.playersAtFinalTable = 9;
-    // formData.reserveExtraSeats = 0;
   }
   </script>
   

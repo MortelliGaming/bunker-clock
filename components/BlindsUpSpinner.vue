@@ -13,13 +13,13 @@
           class="front"
           :style="{ backgroundImage: `url(${coinImage})`, paddingTop: '40px' }"
         >
-          <span class="text-content">{{ blindsText }}</span>
+          <span class="text-content">{{ props.blindsText }}</span>
         </div>
         <div
           class="back"
           :style="{ backgroundImage: `url(${coinImage})`, paddingTop: '40px' }"
         >
-          <span class="text-content">{{ blindsText }}</span>
+          <span class="text-content">{{ props.blindsText }}</span>
         </div>
       </div>
     </div>

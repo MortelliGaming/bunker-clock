@@ -9,7 +9,7 @@
         <v-col class="text-right">
           <v-btn class="ma-1" @click="addLevel">Ebene hinzufügen</v-btn>
           <v-btn class="ma-1" @click="addBreak">Pause hinzufügen</v-btn>
-          <v-btn class="ma-1" @click="">Vorlage Speichen</v-btn>
+          <v-btn class="ma-1" @click="">Vorlage Speichern</v-btn>
           <v-btn class="ma-1" @click="">Vorlage Laden</v-btn>
         </v-col>
       </v-row>
@@ -36,7 +36,8 @@
             <td>
               <v-text-field
                 @input="saveLevels"
-                v-model.number="level.time" density="compact"/></td>
+                v-model.number="level.time" density="compact"/>
+            </td>
             <td v-if="!level.isBreak" class="d-flex align-center">
               <v-text-field
                 @input="saveLevels"
@@ -60,9 +61,12 @@
 
 <script lang="ts" setup>
 const router = ref(useRouter());
-const tournamentsStore = useTournamentsStore();
+
+const { updateTournament } = useTournamentsStore();
+const { tournaments } = storeToRefs(useTournamentsStore());
+
 const tournament = computed(() => {
-  return tournamentsStore.tournaments.find(
+  return tournaments.value.find(
     (t) => t.id == router.value.currentRoute.params.id
   );
 });
@@ -86,7 +90,7 @@ function loadLevels() {
 function saveLevels() {
   if (tournament.value) {
     tournament.value.settings.levels = levels.value;
-    tournamentsStore.updateTournament(tournament.value.id, {
+    updateTournament(tournament.value.id, {
       settings: tournament.value.settings,
     });
     loadLevels();
@@ -94,14 +98,13 @@ function saveLevels() {
 }
 
 function removeLevel(index: number) {
-  if(tournament.value) {
-
-      tournament.value.settings.levels.splice(index, 1);
-      tournamentsStore.updateTournament(tournament.value.id, {
-        settings: tournament.value.settings,
-      });
-      loadLevels();
-    }
+  if (tournament.value) {
+    tournament.value.settings.levels.splice(index, 1);
+    updateTournament(tournament.value.id, {
+      settings: tournament.value.settings,
+    });
+    loadLevels();
+  }
 }
 
 function addLevel() {
@@ -112,7 +115,7 @@ function addLevel() {
       bigBlind: 10,
       isBreak: false,
     });
-    tournamentsStore.updateTournament(tournament.value.id, {
+    updateTournament(tournament.value.id, {
       settings: tournament.value.settings,
     });
     loadLevels();
@@ -127,7 +130,7 @@ function addBreak() {
       bigBlind: 0,
       isBreak: true,
     });
-    tournamentsStore.updateTournament(tournament.value.id, {
+    updateTournament(tournament.value.id, {
       settings: tournament.value.settings,
     });
     loadLevels();
@@ -150,7 +153,7 @@ function onDrop(event: DragEvent, index: number) {
     levels.value.splice(draggedIndex, 1);
     levels.value.splice(index, 0, draggedItem);
     draggedIndex = null;
-    if(tournament.value) {
+    if (tournament.value) {
       saveLevels();
     }
   }
@@ -158,22 +161,6 @@ function onDrop(event: DragEvent, index: number) {
 </script>
 
 <style scoped lang="scss">
-.bg-bv-darkblue-700 {
-  background-color: #1c3a57; /* Replace with your desired color */
-}
-
-.text-bv-darkblue-A300 {
-  color: #6c8a99; /* Replace with your desired color */
-}
-
-.text-orange-500 {
-  color: #fb8c00; /* Replace with your desired color */
-}
-
-.pad {
-  padding: 20px;
-}
-
 .level-item {
   cursor: grab;
 }
@@ -182,11 +169,7 @@ function onDrop(event: DragEvent, index: number) {
   cursor: grabbing;
 }
 
-</style>
-<style lang="scss">
-.levels-table {
-  .v-input__details {
-    display: none;
-  }
+.levels-table .v-input__details {
+  display: none;
 }
 </style>

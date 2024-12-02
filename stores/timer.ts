@@ -18,7 +18,20 @@ export const useTimerStore = defineStore('timer', () => {
     isBreak: true,
     time: 5 * 60 * 60,
   } as TournamentLevel);
-  const nextLevel = computed(() => (levels.value && levels.value.length > currentLevelIndex.value) && levels.value[currentLevelIndex.value + 1]);
+  const nextLevel = computed<TournamentLevel>(() => {
+    // Ensure that `levels` is defined and has more levels than the current index
+    const next = (levels.value && levels.value.length > currentLevelIndex.value)
+      ? levels.value[currentLevelIndex.value + 1]
+      : undefined;
+  
+    // If there's no valid next level, return the default
+    return next ?? {
+      smallBlind: 0,
+      bigBlind: 0,
+      time: 15 * 60 * 60, // Default time in seconds
+      isBreak: true,
+    };
+  });
   
   const nextBreakTime = computed(() => {
     if (!selectedTournament.value || !selectedTournament.value.settings.levels.length || currentLevel.value.isBreak) {
@@ -48,11 +61,9 @@ export const useTimerStore = defineStore('timer', () => {
           mainTimer.value--;
           totalPlayTime.value++;
         } else {
-          setTimeout(() => {
-          }, 5000)
-          forward()
+          // forward()
           // playAlarm();
-          // toggleTimer(); // Pause the timer when it reaches 0
+          toggleTimer(); // Pause the timer when it reaches 0
         }
       }, 1000);
     } else {

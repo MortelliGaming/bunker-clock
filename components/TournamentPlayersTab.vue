@@ -50,11 +50,16 @@
     import NewPlayerDialog from './NewPlayerDialog.vue';
 
     const router = ref(useRouter())
-    const tournamentsStore = useTournamentsStore()
-    const tournament = computed(() => {
-        return tournamentsStore.tournaments.find(t => t.id == router.value.currentRoute.params.id)
-    })
+    const {
+      tournaments,
+    } = storeToRefs(useTournamentsStore())
+    const {
+      updateTournament,
+    } = useTournamentsStore()
 
+    const tournament = computed(() => {
+        return tournaments.value.find(t => t.id == router.value.currentRoute.params.id)
+    })
 
     const menuActions = [
       { id: 'elimination', label: 'Ausscheidung', icon: 'mdi-close-circle-outline' },
@@ -73,7 +78,7 @@
         }
         console.log(shuffled)
 
-        tournamentsStore.updateTournament(tournament.value.id, {
+        updateTournament(tournament.value.id, {
           players: tournament.value.players,
         })
       }
@@ -138,7 +143,7 @@
         case 'addon':
           if(tournament.value) {
             tournament.value.players[playerIndex].addons++;
-            tournamentsStore.updateTournament(tournament.value.id, {
+            updateTournament(tournament.value.id, {
               players: tournament.value.players,
             })
           }
@@ -146,7 +151,7 @@
         case 'rebuy':
           if(tournament.value) {
             tournament.value.players[playerIndex].rebuys++;
-            tournamentsStore.updateTournament(tournament.value.id, {
+            updateTournament(tournament.value.id, {
               players: tournament.value.players,
             })
           }
@@ -154,7 +159,7 @@
         case 'elimination':
           if(tournament.value) {
             tournament.value.players[playerIndex].out++;
-            tournamentsStore.updateTournament(tournament.value.id, {
+            updateTournament(tournament.value.id, {
               players: tournament.value.players,
             })
           }
@@ -162,7 +167,7 @@
         case 'unregister':
           if(tournament.value) {
             tournament.value.players.splice(playerIndex,1);
-            tournamentsStore.updateTournament(tournament.value.id, {
+            updateTournament(tournament.value.id, {
               players: tournament.value.players,
             })
           }
@@ -191,7 +196,7 @@
           out: 0,
           knockouts: 0,
         })
-        tournamentsStore.updateTournament(tournament.value.id, {
+        updateTournament(tournament.value.id, {
           players: tournament.value.players,
         })
       }

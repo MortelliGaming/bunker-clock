@@ -22,11 +22,6 @@
                     Öffnen
                 </v-btn>
             </v-col>
-            <v-col class="d-flex align-center">
-                <v-btn @click.stop="() => {}">
-                    Anmelden
-                </v-btn>
-            </v-col>
             <v-col>
                 <v-btn icon @click.stop="downloadTournament">
                     <v-icon>mdi-download</v-icon>
@@ -36,9 +31,6 @@
                 </v-btn>
             </v-col>
         </v-row>
-        
-        
-        
       </v-card-actions>
     </v-card>
   </template>
