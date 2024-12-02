@@ -3,8 +3,8 @@
 const { promises: fs } = require('fs');
 const path = require('path');
 
-const dirPath = path.resolve('./data'); // Absolute path to the data folder
-const filePath = path.resolve('./data/tournaments.json'); // Path to the JSON file
+const dirPath = path.resolve('./'); // Absolute path to the data folder
+const filePath = path.resolve('./tournaments.json'); // Path to the JSON file
 
 // Middleware to validate the origin
 function validateOrigin(headers: any) {
@@ -53,9 +53,6 @@ exports.handler = async (event: any) => {
       const validationError = validateTournaments(body.data); // Validate the structure of Tournament[]
       if (validationError) return validationError;
 
-      // Ensure the directory exists (Netlify serverless functions can use local filesystem within the function)
-      await fs.mkdir(dirPath, { recursive: true });
-
       // Save tournaments to JSON file
       await fs.writeFile(filePath, JSON.stringify(body.data, null, 2));
 
@@ -71,7 +68,6 @@ exports.handler = async (event: any) => {
 
   if (event.httpMethod === 'GET') {
     try {
-      await fs.mkdir(dirPath, { recursive: true });
       const data = await fs.readFile(filePath, 'utf-8'); // Read the JSON file
       return {
         statusCode: 200,
