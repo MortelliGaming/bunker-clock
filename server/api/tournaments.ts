@@ -56,7 +56,7 @@ exports.handler = async (event: any) => {
 
       // Save tournaments to JSON file
 
-      const construction = getStore("bunkerclock");
+      const construction = getStore({ siteID: 'warm-torte-138e45', token: 'nfp_UbyM3TJLZascYD7fthydQ9dWySGF419K9075', name: "bunkerclock"});
       await construction.set("tournaments", JSON.stringify(body.data, null, 2));
 
       return {
@@ -71,7 +71,7 @@ exports.handler = async (event: any) => {
 
   if (event.httpMethod === 'GET') {
     try {
-      const construction = getStore("bunkerclock");
+      const construction = getStore({ siteID: 'warm-torte-138e45', token: 'nfp_UbyM3TJLZascYD7fthydQ9dWySGF419K9075', name: "bunkerclock"});
       const tournaments = await construction.get("tournaments");
 
       return {
