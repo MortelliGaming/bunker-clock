@@ -19,9 +19,6 @@
         <v-col class="tournament-box" cols="7">
             <poker-timer
                 v-if="currentLevel"
-                :current-level="currentLevel"
-                @next-level="forward"
-                @previous-level="previous"
             />
         </v-col>
         <v-col cols="2" class="tournament-box">
@@ -116,11 +113,28 @@
             </v-row>
         </v-col>
     </v-row>
-    
+    <blinds-up-spinner v-if="showBlindsUpSpinner" :blindsText="currentLevel.isBreak ? 'Pause' : currentLevel.smallBlind + ' / ' + currentLevel.bigBlind" />
 </template>
 <script lang ="ts" setup>
 import fiveMinuteBlindUp from '@/assets/sounds/blinds_up_5_min.mp3';
 import fiveMinuteBreak from '@/assets/sounds/break_in_5_min.mp3';
+
+import alarmSoundFile from '@/assets/sounds/round-end.mp3';
+
+let alarmSound: HTMLAudioElement | null = null;
+if (typeof window !== "undefined") {
+  alarmSound = new Audio(alarmSoundFile);
+}
+const showBlindsUpSpinner = ref(false)
+const playAlarm = () => {
+  if (alarmSound) {
+    alarmSound.play();
+    setTimeout(() => {
+      alarmSound.pause();
+      alarmSound.currentTime = 0;
+    }, 2000);
+  }
+};
 
 let fiveMinuteBreakAudio: HTMLAudioElement | null = null;
 if (typeof window !== "undefined") {
@@ -135,7 +149,6 @@ const router = ref(useRouter())
 const tournamentsStore = useTournamentsStore()
 const timerStore = useTimerStore()
 
-const isRoundUp = computed(() => timerStore.isRoundUp)
 const mainTimer = computed(() => timerStore.mainTimer)
 
 const tournament = computed(() => {
@@ -157,7 +170,6 @@ const totalPot = computed(() => {
 const remainingPlayers = computed(() => {
     return (tournament.value?.players?.length ?? 0) - (playersOut.value || 0);
 })
-
 const totalChipsStartStacks = computed(() => {
     return ((tournament.value?.settings.startStack ?? 0) * (tournament.value?.players?.length ?? 0));
 })
@@ -174,10 +186,9 @@ const averageStack = computed(() => {
     return (totalChipsInGame.value / (remainingPlayers.value > 0 ? remainingPlayers.value : 1)).toFixed(0);
 })
 
-const currentLevelIndex = ref(0)
-const levels = computed(() => tournament.value?.settings.levels ?? [])
-const currentLevel = computed(() => levels.value && levels.value[currentLevelIndex.value]);
-const nextLevel = computed(() => (levels.value && levels.value.length > currentLevelIndex.value) && levels.value[currentLevelIndex.value + 1]);
+const levels = computed(() => timerStore.levels)
+const currentLevel = computed(() => timerStore.currentLevel)
+const nextLevel = computed(() => timerStore.nextLevel)
 
 const firstThird = computed(() => {
   const thirdLength = Math.ceil(levels.value.length / 3);  // Round up to ensure the first two columns get more if needed
@@ -194,22 +205,7 @@ const thirdThird = computed(() => {
   return levels.value.slice(firstThird.value.length + secondThird.value.length);
 });
 
-function forward() {
-    if(levels.value && levels.value.length > currentLevelIndex.value) {
-        currentLevelIndex.value++;
-    }
-    timerStore.resetTimer((currentLevel.value?.time ?? 30) * 60);
-    timerStore.toggleTimer();
-}
-
-function previous() {
-    if(levels.value && currentLevelIndex.value > 0) {
-        currentLevelIndex.value--;
-    }
-    timerStore.resetTimer((currentLevel.value?.time ?? 30) * 60);
-    timerStore.toggleTimer();
-}
-
+/* 
 watch(isRoundUp, (newVal, oldVal) => {
   console.log('isRoundUp')
   console.log(isRoundUp)
@@ -221,6 +217,7 @@ watch(isRoundUp, (newVal, oldVal) => {
     }
   }
 })
+*/
 
 
 watch(mainTimer, () => {
@@ -233,6 +230,18 @@ watch(mainTimer, () => {
       fiveMinuteBlindsUpAudio?.play();
     }
   }
+  if(mainTimer.value == 0) {
+    playAlarm();
+    showBlindsUpSpinner.value = true;
+    setTimeout(() => {
+        showBlindsUpSpinner.value = false;
+    }, 5000)
+  }
+})
+
+onMounted(() => {
+    tournamentsStore.loadTournamentsFromLocalStorage();
+    timerStore.selectedTournament = tournamentsStore.tournaments.find(t => t.id === router.value.currentRoute.params.id) ?? null
 })
 </script>
 

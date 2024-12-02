@@ -5,15 +5,16 @@
       <nuxt-page />
     </v-main>
   </v-app>
+  <!-- blinds-up-spinner
+    v-if="timerStore.isRoundUp"
+    :blindsText="currentLevel.isBreak ? 'Pause' : (currentLevel.smallBlind + ' / ' + currentLevel.bigBlind)" /> -->
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
 
 const tournamentsStore = useTournamentsStore()
 const timerStore = useTimerStore()
 
-const drawer = ref(null)
 onMounted(() => {
   tournamentsStore.loadTournamentsFromLocalStorage();
   setTimeout(() => {

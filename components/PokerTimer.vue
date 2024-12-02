@@ -26,7 +26,7 @@
       :max="timerStore.roundDuration"
       :model-value.number="timerStore.roundDuration - timerStore.mainTimer"
       :step="1"
-      @update:model-value="(value) => {
+      @update:model-value="(value: number) => {
         timerStore.updateMainTimer(timerStore.roundDuration - value);
       }"
       class="mt-4"
@@ -54,36 +54,21 @@
       </v-btn>
     </div>
   </v-col>
-  <blinds-up-spinner v-if="timerStore.isRoundUp" :blindsText="currentLevel.isBreak ? 'Pause' : currentLevel.smallBlind + ' / ' + currentLevel.bigBlind" />
 </template>
 
 <script lang="ts" setup>
-import alarmSoundFile from '@/assets/sounds/round-end.mp3';
-
-let alarmSound: HTMLAudioElement | null = null;
-if (typeof window !== "undefined") {
-  alarmSound = new Audio(alarmSoundFile);
-}
 //  BlindsUpSpinenr
 const timerStore = useTimerStore();
-const props = defineProps({
-  currentLevel: {
-    type: Object,
-    required: true,
-  }
-})
-const emit = defineEmits(['nextLevel', 'previousLevel'])
+const emit = defineEmits()
 
-const isRoundUp = computed(() => timerStore.isRoundUp)
+const currentLevel = computed(() => timerStore.currentLevel)
 // Button actions
 const prevLevel = () => {
-  // timerStore.prevLevel();
-  emit('previousLevel');
+  timerStore.back();
 };
 
 const nextLevel = () => {
-  // timerStore.nextLevel();
-  emit('nextLevel');
+  timerStore.forward();
 };
 
 const toggleTimer = () => {
@@ -94,15 +79,6 @@ const toggleFullScreen = () => {
   console.log("Toggle Full Screen");
 };
 
-const playAlarm = () => {
-  if (alarmSound) {
-    alarmSound.play();
-    setTimeout(() => {
-      alarmSound.pause();
-      alarmSound.currentTime = 0;
-    }, 2000);
-  }
-};
 
 // Utility for time formatting
 const formatTime = (seconds: number) => {
@@ -112,14 +88,6 @@ const formatTime = (seconds: number) => {
     .toString()
     .padStart(2, "0")}`;
 };
-
-watch(isRoundUp, (newVal, oldVal) => {
-  console.log('isRoundUp')
-  console.log(isRoundUp)
-  if(isRoundUp.value == true) {
-    playAlarm();
-  }
-})
 </script>
 
 <style scoped>
