@@ -3,7 +3,7 @@
 const { promises: fs } = require('fs');
 const path = require('path');
 
-const dirPath = path.resolve('./'); // Absolute path to the data folder
+// const dirPath = path.resolve('./'); // Absolute path to the data folder
 const filePath = path.resolve('./tournaments.json'); // Path to the JSON file
 
 // Middleware to validate the origin
