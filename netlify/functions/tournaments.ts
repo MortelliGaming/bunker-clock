@@ -8,7 +8,7 @@ const filePath = path.resolve('./data/tournaments.json'); // Path to the JSON fi
 
 // Middleware to validate the origin
 function validateOrigin(headers: any) {
-  const allowedOrigins = ['https://bunkerclock.mortelligaming.org', 'http://localhost:5173'];
+  const allowedOrigins = ['https://bunkerclock.mortelligaming.org/', 'http://localhost:5173/'];
   const origin = headers['referer'] || headers['host'] || '';
   if (!allowedOrigins.includes(origin)) {
     return { statusCode: 403, body: JSON.stringify({ error: 'Forbidden: Invalid Origin' }) };
