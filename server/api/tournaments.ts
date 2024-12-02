@@ -1,4 +1,4 @@
-import { Client, fql, FaunaError, QuerySuccess } from 'fauna';
+import { Client, fql, DocumentReference, QuerySuccess, } from 'fauna';
 import { Tournament } from '~/stores/tournaments';
 
 const client = new Client({
@@ -7,7 +7,10 @@ const client = new Client({
 async function saveTournamentsToFauna(tournaments: Tournament[]) {
   try {
     for (const tournament of tournaments) {
-      const tournamentId = tournament.id; // Assuming 'id' is the unique key for each tournament
+      const tournamentId =  new DocumentReference({
+        id: tournament.id,
+        coll: 'tournaments',
+      }); // Assuming 'id' is the unique key for each tournament
 
       // Check if tournament exists by its 'id' (using fql)
       const tournamentExistsQuery = fql`exists(tournaments.byId(${tournamentId}))`;
