@@ -23,6 +23,9 @@
                 </v-btn>
             </v-col>
             <v-col>
+                <v-btn icon @click.stop="duplicateTournament">
+                    <v-icon>mdi-content-duplicate</v-icon>
+                </v-btn>
                 <v-btn icon @click.stop="downloadTournament">
                     <v-icon>mdi-download</v-icon>
                 </v-btn>
@@ -36,7 +39,7 @@
   </template>
   
   <script lang="ts" setup>
-  const emit = defineEmits(['open', 'delete', 'download'])
+  const emit = defineEmits(['open', 'delete', 'download', 'duplicate'])
 
   const props = defineProps({
     title: String,
@@ -52,6 +55,12 @@
   const downloadTournament = () => {
     // Handle register tournament logic
     emit('download')
+  };
+  
+
+  const duplicateTournament = () => {
+    // Handle register tournament logic
+    emit('duplicate')
   };
   
   const deleteTournament = () => {

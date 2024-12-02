@@ -51,7 +51,7 @@
         <v-col cols="6" xs="12">
             <tournament-card
                 class="mt-3"
-                v-for="tournament in tournamentsStore.tournaments"
+                v-for="tournament in tournaments"
                 :key="tournament.id"
                 :title="tournament.name"
                 :date="tournament.date + ' ' + tournament.startTime"
@@ -59,6 +59,7 @@
                 @open="() => navigateToTournament(tournament.id)"
                 @delete="() => deleteTournament(tournament.id)"
                 @download="() => downloadTournament(tournament.id)"
+                @duplicate="() => duplicateTournament(tournament.id)"
             />
         </v-col>
     </v-row>
@@ -71,19 +72,32 @@
   
   const router = useRouter()
   const tournamentDialog = ref<InstanceType<typeof TournamentDialog>>();
-  const tournamentsStore = useTournamentsStore();
+  const {
+    removeTournament,
+    addTournament
+  } = useTournamentsStore();
+  const {
+    tournaments
+  } = storeToRefs(useTournamentsStore());
 
   const createTournament = () => {
     tournamentDialog.value?.show()
   };
 
+  const duplicateTournament = (id: string) => {
+    const toDuplicateTournament = Object.assign({}, tournaments.value.find(t => t.id == id))
+    toDuplicateTournament.id = ''
+    toDuplicateTournament.name += ' (Copy)'
+    addTournament(toDuplicateTournament)
+  };
+
   const deleteTournament = (id: string) => {
-    tournamentsStore.removeTournament(id)
+    removeTournament(id)
   };
 
   const downloadTournament = (id: string) => {
     console.log('id: string');
-    const tournamentToDownload = tournamentsStore.tournaments.find(t => t.id == id)
+    const tournamentToDownload = tournaments.value.find(t => t.id == id)
     if(tournamentToDownload) {
       // Convert the tournament object to a JSON string
       const jsonString = JSON.stringify(tournamentToDownload, null, 2); // Pretty-print with 2 spaces
