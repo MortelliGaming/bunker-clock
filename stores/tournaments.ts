@@ -95,6 +95,11 @@ export const useTournamentsStore = defineStore('tournament', () => {
       await loadTournaments()
       if(tournaments.value && tournaments.value.length > 0) {
         saveTournamentsToLocalStorage();
+      } else {
+        const savedTournaments = localStorage.getItem('bunker_clock_tournaments');
+        if(savedTournaments)  {
+            tournaments.value = JSON.parse(savedTournaments);
+        }
       }
       return;
     } catch {}
