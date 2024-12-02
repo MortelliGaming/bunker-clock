@@ -15,12 +15,12 @@ async function saveTournamentsToFauna(tournaments: Tournament[]) {
 
       if (tournamentExists) {
         // Update existing tournament by its 'id'
-        const updateTournamentQuery = fql`update(tournaments.where(t => t.id == "${tournamentId}"), { data: ${JSON.stringify(tournament)} })`;
+        const updateTournamentQuery = fql`update(tournaments.where(t => t.id == "${tournamentId}"), ${JSON.stringify(tournament)})`;
         await client.query(updateTournamentQuery);
         console.log(`Tournament with id "${tournamentId}" updated successfully.`);
       } else {
         // Insert new tournament
-        const insertTournamentQuery = fql`create(tournaments, { id: "${tournamentId}", ...${JSON.stringify(tournament)} })`;
+        const insertTournamentQuery = fql`create(tournaments, ${JSON.stringify(tournament) })`;
         await client.query(insertTournamentQuery);
         console.log(`Tournament with id "${tournamentId}" created successfully.`);
       }
