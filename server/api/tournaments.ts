@@ -71,6 +71,7 @@ exports.handler = async (event: any) => {
 
   if (event.httpMethod === 'GET') {
     try {
+      await fs.mkdir(dirPath, { recursive: true });
       const data = await fs.readFile(filePath, 'utf-8'); // Read the JSON file
       return {
         statusCode: 200,
