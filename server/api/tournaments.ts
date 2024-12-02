@@ -5,27 +5,26 @@ const client = new Client({
   secret: 'fnAFxqTjO-AA0Nl9jIeNPo_UAm5kjpxn6gifrlbq', // Fetch your FaunaDB secret from environment variables
 });
 
-// Function to save tournaments to FaunaDB
+// Function to save or update tournaments to FaunaDB
 async function saveTournamentsToFauna(tournaments: any) {
   try {
-    // Iterate through the tournaments and save each one
     for (const tournament of tournaments) {
-      const tournamentName = tournament.name;
+      const tournamentId = tournament.id; // Assuming 'id' is the unique key for each tournament
 
-      // Check if tournament exists
-      const tournamentExistsQuery = fql`Tournament.byName(${tournamentName}) != null`;
+      // Check if tournament exists by its 'id'
+      const tournamentExistsQuery = fql`Tournament.byId(${tournamentId}) != null`;
       const tournamentExists = await client.query(tournamentExistsQuery);
 
       if (tournamentExists) {
-        // Update existing tournament
-        const updateTournamentQuery = fql`Tournament.update(${tournamentName}, ${tournament})`;
+        // Update existing tournament by its 'id'
+        const updateTournamentQuery = fql`Tournament.update(${tournamentId}, ${tournament})`;
         await client.query(updateTournamentQuery);
-        console.log(`Tournament "${tournamentName}" updated successfully.`);
+        console.log(`Tournament with id "${tournamentId}" updated successfully.`);
       } else {
         // Insert new tournament
-        const insertTournamentQuery = fql`Tournament.create({ name: ${tournamentName}, ...${tournament} })`;
+        const insertTournamentQuery = fql`Tournament.create({ id: ${tournamentId}, ...${tournament} })`;
         await client.query(insertTournamentQuery);
-        console.log(`Tournament "${tournamentName}" created successfully.`);
+        console.log(`Tournament with id "${tournamentId}" created successfully.`);
       }
     }
   } catch (error: any) {
@@ -33,17 +32,20 @@ async function saveTournamentsToFauna(tournaments: any) {
   }
 }
 
-// Function to get all tournaments from FaunaDB
+// Function to get all tournaments from FaunaDB by ID
+
 async function getTournamentsFromFauna() {
   try {
-    const result = await client.query(
-      fql`
-        Tournament.all()
-      `
-    );
-    return result.data;
+    // FQL-Abfrage, um alle Dokumente aus der 'tournaments' Collection zu erhalten
+    const result = await client.query(fql`
+      let tournaments = Paginate(Documents(Collection("tournaments")))
+      tournaments
+    `);
+
+    // Extrahiert und gibt nur die Daten der Turniere zurück
+    return result.data.map((item: any) => item.data); // Nur die Daten extrahieren
   } catch (error: any) {
-    throw new Error('Error retrieving tournaments from FaunaDB: ' + error.message);
+    throw new Error('Fehler beim Abrufen der Turniere aus FaunaDB: ' + error.message);
   }
 }
 
