@@ -10,6 +10,8 @@ async function saveTournamentsToFauna(tournaments: Tournament[]) {
       const tournamentId =  tournament.id
 
       // Check if tournament exists by its 'id' (using fql)
+      console.log(tournaments)
+      console.log(`tournaments.firstWhere(t => t.id == "${tournamentId}")`)
       const tournamentExistsQuery = fql`tournaments.firstWhere(t => t.id == "${tournamentId}")`;
       const tournamentExists = (await client.query(tournamentExistsQuery) as any);
 
