@@ -101,9 +101,14 @@ export const useTimerStore = defineStore('timer', () => {
     // Add logic to navigate to the next level and update timers
   };
 
-  const formatTime = (seconds: number) => {
+  const formatTime = (seconds: number): string => {
+    // Ensure the input is a valid, non-negative number
+    if (typeof seconds !== 'number' || !isFinite(seconds) || seconds < 0) {
+      return '00:00';
+    }
+  
     const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
+    const remainingSeconds = Math.floor(seconds % 60); // Ensure integer values
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds
       .toString()
       .padStart(2, '0')}`;
