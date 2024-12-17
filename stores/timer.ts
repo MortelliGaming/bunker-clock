@@ -74,12 +74,12 @@ export const useTimerStore = defineStore('timer', () => {
     }
   };
 
-  const resetTimer = (roundTimeInMS: number) => {
+  const resetTimer = (roundTimeInS: number) => {
     if (intervalId !== null) {
       clearInterval(intervalId);
       intervalId = null;
     }
-    roundDuration.value = roundTimeInMS;
+    roundDuration.value = roundTimeInS * 60;
     mainTimer.value = roundDuration.value;
     isRunning.value = false;
   };
