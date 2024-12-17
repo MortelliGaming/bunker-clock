@@ -76,8 +76,6 @@
         for (let seat of shuffled) {
           tournament.value.players[shuffled.indexOf(seat)].seat = seat;
         }
-        console.log(shuffled)
-
         updateTournament(tournament.value.id, {
           players: tournament.value.players,
         })
@@ -138,7 +136,6 @@
     }
 
     function handleMenuAction(playerIndex: number, action: { id: string; label: string; icon: string }) {
-      console.log(`Received action from menu: ${action.id}`);
       switch(action.id) {
         case 'addon':
           if(tournament.value) {
@@ -176,12 +173,10 @@
     }
 
     function openNewPlayerDialog() {
-      console.log(newPlayerDialog.value)
       newPlayerDialog.value?.open();
     }
     
     function addPlayer(playername: string) {
-      console.log(playername)
       const playerExist = tournament.value?.players?.find(p => p.name === playername)
       if (tournament.value && !playerExist) {
         if(!tournament.value.players) {

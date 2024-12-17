@@ -50,7 +50,6 @@
     if (!username.value) return; // Validation handled by rules
     // Emit the username or handle it here
     emit('save', username.value)
-    console.log('Username stored:', username.value);
     close();
   }
   

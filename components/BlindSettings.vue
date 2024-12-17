@@ -138,8 +138,6 @@
       tournament.value.settings.duration = formData.duration;
       updateTournament(tournament.value.id, tournament.value);
     }
-    
-    console.log('Form submitted:', formData);
   }
   
   // Reset handler

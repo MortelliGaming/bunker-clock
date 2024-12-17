@@ -27,12 +27,12 @@
   <script lang="ts" setup>
   const props = defineProps({
         currentLevel: {
-            type: Object as PropType<TournamentLevel>,
-            required: true,
+            type: Object as PropType<TournamentLevel> | undefined,
+            required: false,
         },
         nextLevel: {
-            type: Object as PropType<TournamentLevel>,
-            required: true,
+            type: Object as PropType<TournamentLevel> | undefined,
+            required: false,
         },
     })
   </script>

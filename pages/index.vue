@@ -96,7 +96,6 @@
   };
 
   const downloadTournament = (id: string) => {
-    console.log('id: string');
     const tournamentToDownload = tournaments.value.find(t => t.id == id)
     if(tournamentToDownload) {
       // Convert the tournament object to a JSON string

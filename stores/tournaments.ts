@@ -55,7 +55,6 @@ export const useTournamentsStore = defineStore('tournament', () => {
 
   // Actions
   const addTournament = (tournament: Tournament) => {
-    console.log('store save')
     tournaments.value.push({ ...tournament, id: generateId() });
     saveTournamentsToLocalStorage();
   };
@@ -117,8 +116,7 @@ export const useTournamentsStore = defineStore('tournament', () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ data: tournamentData }),
-      })  
-      console.log('Tournament saved successfully:', response);
+      })
     } catch (error) {
       console.error('Error saving tournament:', error);
     }
@@ -129,7 +127,6 @@ export const useTournamentsStore = defineStore('tournament', () => {
     try {
       const response = await $fetch('/api/tournaments');
       tournaments.value = (response as any).message as Tournament[]; // Update local state with loaded tournaments
-      console.log('Tournaments loaded:', tournaments.value);
     } catch (error) {
       console.error('Error loading tournaments:', error);
     }

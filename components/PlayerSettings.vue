@@ -92,7 +92,6 @@
             settings: tournament.value.settings,
         })
     }
-    console.log('Form submitted:', formData);
   }
   
   // Reset handler

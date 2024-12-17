@@ -46,7 +46,6 @@
       console.error('Invalid action:', action);
       return;
     }
-    console.log(`Action triggered: ${action.label}`);
     emit('action-clicked', action);
     menu.value = false; // Close menu after action
   }

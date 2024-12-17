@@ -7,11 +7,12 @@
         />
         <v-col class="tournament-box" cols="7">
             <poker-timer
-                v-if="currentLevel"
+                v-show="currentLevel"
             />
         </v-col>
         <v-col cols="2" class="tournament-box">
             <levels-info
+                v-show="currentLevel"
                 :currentLevel="currentLevel"
                 :nextLevel="nextLevel"
             />
@@ -51,7 +52,7 @@
             </v-row>
         </v-col>
     </v-row>
-    <blinds-up-spinner v-if="showBlindsUpSpinner" :blindsText="currentLevel.isBreak ? 'Pause' : currentLevel.smallBlind + ' / ' + currentLevel.bigBlind" />
+    <blinds-up-spinner v-if="currentLevel && showBlindsUpSpinner" :blindsText="currentLevel.isBreak ? 'Pause' : currentLevel?.smallBlind + ' / ' + currentLevel?.bigBlind" />
 </template>
 <script lang ="ts" setup>
 import BlindsInfo from './tournament/BlindsInfo.vue';

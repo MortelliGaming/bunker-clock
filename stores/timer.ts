@@ -34,7 +34,7 @@ export const useTimerStore = defineStore('timer', () => {
   });
   
   const nextBreakTime = computed(() => {
-    if (!selectedTournament.value || !selectedTournament.value.settings.levels.length || currentLevel.value.isBreak) {
+    if (!selectedTournament.value || !selectedTournament.value.settings.levels.length || !currentLevel.value || currentLevel.value?.isBreak) {
       return 0; // No tournament or levels defined
     }
   
@@ -85,7 +85,6 @@ export const useTimerStore = defineStore('timer', () => {
   };
 
   const back = () => {
-    console.log('Previous Level');
     if(selectedTournament.value?.settings.levels && currentLevelIndex.value > 0) {
         currentLevelIndex.value--;
     }
@@ -94,9 +93,8 @@ export const useTimerStore = defineStore('timer', () => {
   };
 
   const forward = () => {
-    console.log('Next Level');
-    if(selectedTournament.value?.settings.levels && selectedTournament.value?.settings.levels.length > currentLevelIndex.value) {
-        currentLevelIndex.value++;
+    if(selectedTournament.value?.settings.levels && (selectedTournament.value.settings.levels.length > currentLevelIndex.value + 1)) {
+      currentLevelIndex.value++;
     }
     resetTimer((currentLevel.value?.time ?? 30) * 60);
     toggleTimer();

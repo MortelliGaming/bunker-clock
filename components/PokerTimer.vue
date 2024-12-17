@@ -10,7 +10,7 @@
       <v-col></v-col>
       <!-- Next Break -->
       <v-col class="time-box justify-end d-flex align-center pr-3">
-        <div class="pt-1 mr-2">{{ formatTime(nextBreakTime) }}</div>
+        <div class="pt-1 mr-2">{{ nextBreakTime || formatTime(nextBreakTime) }}</div>
         <v-icon color="orange">mdi-coffee-outline</v-icon>
       </v-col>
     </v-row>
@@ -24,10 +24,12 @@
     <v-slider
       :min="0"
       :max="roundDuration"
-      :model-value.number="roundDuration - mainTimer"
+      :model-value.number="(roundDuration - mainTimer) || 0"
       :step="1"
       @update:model-value="(value: number) => {
-        updateMainTimer(roundDuration - value);
+        try {
+          updateMainTimer(roundDuration - value);
+        } catch {}
       }"
       class="mt-4"
       color="orange"
