@@ -10,7 +10,7 @@
       <v-col></v-col>
       <!-- Next Break -->
       <v-col class="time-box justify-end d-flex align-center pr-3">
-        <div class="pt-1 mr-2">{{ nextBreakTime || formatTime(nextBreakTime) }}</div>
+        <div class="pt-1 mr-2">{{ formatTime(nextBreakTime) }}</div>
         <v-icon color="orange">mdi-coffee-outline</v-icon>
       </v-col>
     </v-row>

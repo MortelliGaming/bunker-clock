@@ -16,7 +16,7 @@ export const useTimerStore = defineStore('timer', () => {
     smallBlind: 0,
     bigBlind: 0,
     isBreak: true,
-    time: 5 * 60 * 60,
+    time: 5 * 60,
   } as TournamentLevel);
   const nextLevel = computed<TournamentLevel>(() => {
     // Ensure that `levels` is defined and has more levels than the current index
@@ -28,7 +28,7 @@ export const useTimerStore = defineStore('timer', () => {
     return next ?? {
       smallBlind: 0,
       bigBlind: 0,
-      time: 15 * 60 * 60, // Default time in seconds
+      time: 15 * 60, // Default time in seconds
       isBreak: true,
     };
   });
@@ -88,7 +88,7 @@ export const useTimerStore = defineStore('timer', () => {
     if(selectedTournament.value?.settings.levels && currentLevelIndex.value > 0) {
         currentLevelIndex.value--;
     }
-    resetTimer((currentLevel.value?.time ?? 30) * 60);
+    resetTimer((currentLevel.value?.time ?? 30));
     toggleTimer();
   };
 
@@ -96,7 +96,7 @@ export const useTimerStore = defineStore('timer', () => {
     if(selectedTournament.value?.settings.levels && (selectedTournament.value.settings.levels.length > currentLevelIndex.value + 1)) {
       currentLevelIndex.value++;
     }
-    resetTimer((currentLevel.value?.time ?? 30) * 60);
+    resetTimer((currentLevel.value?.time ?? 30));
     toggleTimer();
     // Add logic to navigate to the next level and update timers
   };
