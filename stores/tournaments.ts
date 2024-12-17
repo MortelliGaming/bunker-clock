@@ -86,13 +86,13 @@ export const useTournamentsStore = defineStore('tournament', () => {
   const saveTournamentsToLocalStorage = () => {
     localStorage.setItem('bunker_clock_tournaments', JSON.stringify(tournaments.value))
     try {
-      saveTournaments(tournaments.value)
+      // saveTournaments(tournaments.value)
     } catch {}
   };
 
   const loadTournamentsFromLocalStorage = async () => {
     try {
-      await loadTournaments()
+      // await loadTournaments()
       if(tournaments.value && tournaments.value.length > 0) {
         saveTournamentsToLocalStorage();
       } else {
